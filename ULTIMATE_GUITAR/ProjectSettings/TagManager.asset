@@ -5,14 +5,15 @@ TagManager:
   serializedVersion: 2
   tags:
   - Fret
+  - String
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Fret
   - Water
   - UI
-  - 
+  - String
   - 
   - 
   - 

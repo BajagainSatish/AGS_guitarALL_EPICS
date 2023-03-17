@@ -8,6 +8,8 @@ public class FretNum : MonoBehaviour
     private int FRET_NUMBER;
     private Rigidbody actualFret;
 
+    public StringClickHandler stringClickHandlerScript;
+
     private void Start()
     {
         actualFret = GetComponent<Rigidbody>();
@@ -16,5 +18,10 @@ public class FretNum : MonoBehaviour
     public int Return_Fret_Num()
     {
         return FRET_NUMBER;
+    }
+    private void OnMouseExit()
+    {
+        //same fret but over the string and not over fret
+        stringClickHandlerScript.fretNum = FRET_NUMBER;
     }
 }

@@ -7,9 +7,9 @@ public class GuitarString : MonoBehaviour
     private int stringNumber;
     private string string_name;
     private Rigidbody actualString;
-    private bool isPressed = false;
+    //private bool isPressed = false;
 
-    private void Start()
+    private void Awake()
     {
         actualString = GetComponent<Rigidbody>();
         string_name = actualString.name;
@@ -37,30 +37,9 @@ public class GuitarString : MonoBehaviour
         {
             stringNumber = 6;
         }
-        Debug.Log(stringNumber);
     }
-
-    private void OnTriggerStay(Collider other)
+    public int Return_String_Number()
     {
-        if (other.CompareTag("Fret"))
-        {
-            // Set the isPressed variable to true if a fret is being pressed
-            isPressed = true;
-            // Get the fret number from the other collider's script
-            int fretNumber = other.GetComponent<FretNum>().Return_Fret_Num();
-            // Play the appropriate sound
-            //GuitarSoundManager.instance.PlaySound(stringNumber, fretNumber);
-            Debug.Log(fretNumber + stringNumber);
-        }
+        return stringNumber;
     }
-
-    private void OnTriggerExit(Collider other)
-    {
-        if (other.CompareTag("Fret"))
-        {
-            // Set the isPressed variable to false when the fret is released
-            isPressed = false;
-        }
-    }
-
 }
