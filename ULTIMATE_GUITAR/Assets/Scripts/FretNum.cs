@@ -19,9 +19,4 @@ public class FretNum : MonoBehaviour
     {
         return FRET_NUMBER;
     }
-    private void OnMouseExit()
-    {
-        //same fret but over the string and not over fret
-        stringClickHandlerScript.fretNum = FRET_NUMBER;
-    }
 }
