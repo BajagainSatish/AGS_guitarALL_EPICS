@@ -37,7 +37,7 @@ public class GuitarSoundManager : MonoBehaviour
             stringSound.Play();
         }
     }
-    private AudioSource GetStringSound(int stringNumber)
+    public AudioSource GetStringSound(int stringNumber)
     {
         if (stringNumber == 1)
             return Elow;
