@@ -11,6 +11,8 @@ public class GuitarSoundManager : MonoBehaviour
     public AudioSource B;
     public AudioSource Ehigh;
 
+    public AudioSource stringSound;
+
     public float[] pitchAdjustments;
 
     private GuitarSoundManager guitarSoundManager;
@@ -30,7 +32,7 @@ public class GuitarSoundManager : MonoBehaviour
     public void PlayFretSound(int fretNum, int strNum)
     {
         float pitchAdjustment = pitchAdjustments[fretNum];
-        AudioSource stringSound = guitarSoundManager.GetStringSound(strNum);
+        stringSound = guitarSoundManager.GetStringSound(strNum);
         if (stringSound != null)
         {
             stringSound.pitch = pitchAdjustment;

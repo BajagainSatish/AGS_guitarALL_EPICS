@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.Audio;
 public class StringClickHandler : MonoBehaviour
 {
     public GuitarSoundManager guitarSoundManager;
@@ -15,11 +15,15 @@ public class StringClickHandler : MonoBehaviour
     private int fretNum;
     private int strNum;
 
+    private float startPitch;
+    private float endPitch;
+    public float duration = 1f; // Duration of the bend in seconds, arbitrary value
+    private float currentPitch; // Current pitch during the bend
+    private float timer; // Timer to keep track of the progress of the bend
+
     private bool audioPlayed = false;
 
     [SerializeField] private LayerMask layerMask;
-
-    //There is one main bug,when mouse cursor moves from one string to another without passing through fret, then value at previous fret will be played and not of current fret
     private void Update()
     {
         if (Input.GetMouseButtonDown(0))
@@ -63,11 +67,13 @@ public class StringClickHandler : MonoBehaviour
                             //Bend String Code Implementation
                             if (buttonScript.bendIsPressed)
                             {
+                                //better approach, actual bend
                                 isDraggingVertical = true;
                                 initialMousePosition = Input.mousePosition;
+                                guitarSoundManager.PlayFretSound(fretNum, strNum);//played just once here
+                                //now code inside if(INput.getmousebutton(0) && isDraggingVertical) is executed
                             }
                             //code verticalDisplacement = Input.mousePosition.y - inputPosition.y inside another if block
-                            //set isDraggingVertical = false at Input.GetMouseButtonUp
                             //Bend String Code Implementation
 
 
@@ -137,6 +143,7 @@ public class StringClickHandler : MonoBehaviour
         if (Input.GetMouseButton(0) && isDraggingVertical)
         {
             verticalDisplacement = Input.mousePosition.y - initialMousePosition.y;
+            /* BEND APPROACH 1, SIMILAR TO SLIDE EFFECT
             if ((verticalDisplacement >= 5f && verticalDisplacement < 25f) || (verticalDisplacement <= -5f && verticalDisplacement >= -25f))//increase to next note
             {
                 if (!audioPlayed)
@@ -153,6 +160,27 @@ public class StringClickHandler : MonoBehaviour
                     audioPlayed = true;
                 }
             }
+            */
+            //APPROACH 2
+            if (verticalDisplacement >= 5f || verticalDisplacement <= -5f)//increase to next note
+            {
+                /////OMGGGGGGGGGGG GENIUSSSSS
+                startPitch = Mathf.Pow(2f, fretNum / 12f);
+                endPitch = Mathf.Pow(2f, (fretNum+3) / 12f);
+                if (timer < duration)
+                {
+                    // Calculate the new pitch based on the progress of the bend
+                    float t = timer / duration;
+                    currentPitch = Mathf.Lerp(startPitch, endPitch, t);
+
+                    // Set the pitch of the Audio Source to the new pitch
+                    guitarSoundManager.stringSound.pitch = currentPitch;
+
+                    // Increment the timer
+                    timer += Time.deltaTime;
+                }
+            }
+
         }
         if (Input.GetMouseButton(0) && isDraggingHorizontal)
         {
@@ -203,7 +231,7 @@ public class StringClickHandler : MonoBehaviour
 
                         //Restore layer of string gameobject
                         int stringLayer = LayerMask.NameToLayer("String");
-                        stringClicked.gameObject.layer = stringLayer;
+                        stringClicked.layer = stringLayer;
                         //Debug.Log("Updated layer of string:" + stringClicked.layer);
                     }
 
@@ -247,7 +275,7 @@ public class StringClickHandler : MonoBehaviour
                                 }
                                 //Restore layer of string gameobject
                                 int stringLayer = LayerMask.NameToLayer("String");
-                                stringClicked.gameObject.layer = stringLayer;
+                                stringClicked.layer = stringLayer;
                                 //Debug.Log("Updated layer of string:" + stringClicked.layer);
                             }
                         }
@@ -282,11 +310,22 @@ public class StringClickHandler : MonoBehaviour
                     guitarSoundManager.PlayFretSound(0, strNum);
                 }
             }
-            Debug.Log("Vertical displacement: " + verticalDisplacement);
-            Debug.Log("Horizontal displacement: " + horizontalDisplacement);
+            if (isDraggingVertical)
+            {
+                Debug.Log("Vertical displacement: " + verticalDisplacement);
+            }
+
+            if (isDraggingHorizontal)
+            {
+                Debug.Log("Horizontal displacement: " + horizontalDisplacement);
+            }
             isDraggingVertical = false;
             isDraggingHorizontal = false;
             audioPlayed = false;
+
+            //Restore to play sound again(due to bend)
+            timer = 0;
+            currentPitch = fretNum;
         }
     }
 }
