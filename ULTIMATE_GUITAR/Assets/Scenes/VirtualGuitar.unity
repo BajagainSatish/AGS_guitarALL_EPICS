@@ -609,6 +609,7 @@ MonoBehaviour:
   G: {fileID: 430274930}
   B: {fileID: 1363619095}
   Ehigh: {fileID: 1960772365}
+  stringSound: {fileID: 0}
   pitchAdjustments: []
 --- !u!1 &212413460
 GameObject:
@@ -3172,6 +3173,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   guitarSoundManager: {fileID: 187785404}
   buttonScript: {fileID: 303098619}
+  duration: 1
   layerMask:
     serializedVersion: 2
     m_Bits: 119
@@ -5805,15 +5807,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 8808cc2ab63070742bfab08784d69afa, type: 3}
       propertyPath: m_RootOrder
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 8808cc2ab63070742bfab08784d69afa, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -0.3540685
+      value: -0.3174
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 8808cc2ab63070742bfab08784d69afa, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.01064029
+      value: -0.0399
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 8808cc2ab63070742bfab08784d69afa, type: 3}
       propertyPath: m_LocalPosition.z
