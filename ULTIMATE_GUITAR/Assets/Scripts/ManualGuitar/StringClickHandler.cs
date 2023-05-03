@@ -34,7 +34,7 @@ public class StringClickHandler : MonoBehaviour
             if (Physics.Raycast(ray, out RaycastHit hit))
             {
                 //Debug.Log(hit.collider.gameObject.name);
-                //Debug.DrawRay(ray.origin, ray.direction * hit.distance, Color.red);
+                Debug.DrawRay(ray.origin, ray.direction * hit.distance, Color.red);
                 if (hit.collider.CompareTag("String"))
                 {
                     // Handle string click
