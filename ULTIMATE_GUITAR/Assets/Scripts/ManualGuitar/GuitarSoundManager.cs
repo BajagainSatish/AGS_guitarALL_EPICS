@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
+using System.IO;
 
 public class GuitarSoundManager : MonoBehaviour
 {
@@ -12,17 +13,19 @@ public class GuitarSoundManager : MonoBehaviour
     public AudioSource G;
     public AudioSource B;
     public AudioSource Ehigh;
-
-    public AudioSource stringSound;
-
-    public float[] pitchAdjustments;
+    public AudioSource stringSound;//accessed by another script
 
     public AudioAnalyzer audioAnalyzer;
-
+    public ButtonScript buttonScript;
     private GuitarSoundManager guitarSoundManager;
+
+    [SerializeField] private string fileName;
+    public float[] pitchAdjustments;
     private int _sampleRate;//44100
     private int sampleSize;//4096
     private float[] _audioData;
+
+    List<StorePlayedNote> storeData = new List<StorePlayedNote>();
 
     private void Start()
     {
@@ -38,6 +41,8 @@ public class GuitarSoundManager : MonoBehaviour
         _sampleRate = 44100;
         sampleSize = 4096;
         _audioData = new float[sampleSize];
+
+        //storeData = FileHandler.ReadFromJSON<StorePlayedNote>(fileName);//verify if reading works, allows to append new values to previous values
     }
 
     public void PlayFretSound(int fretNum, int strNum)
@@ -59,9 +64,23 @@ public class GuitarSoundManager : MonoBehaviour
                 newData[i] = _audioData[oldIndex];
             }
 
-            audioAnalyzer.Interpret(newData, _sampleRate);
+            string note = audioAnalyzer.Interpret(newData, _sampleRate);
+
+            if (buttonScript.isRecordingPressed)
+            {
+            string mode = buttonScript.currentMode;
+            //Debug.Log("Note: " + note + " Mode: " + mode);
+            AddAudioDataToList(note,mode);
+            }
         }
     }
+
+    public void AddAudioDataToList(string theNote, string theMode)
+    {
+        storeData.Add(new StorePlayedNote(theNote, theMode));
+        FileHandler.SaveToJSON<StorePlayedNote>(storeData,fileName);
+    }
+
     public AudioSource GetStringSound(int stringNumber)
     {
         if (stringNumber == 1)

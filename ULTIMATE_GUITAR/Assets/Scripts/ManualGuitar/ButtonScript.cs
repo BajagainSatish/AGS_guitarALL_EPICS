@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.UI;
 public class ButtonScript : MonoBehaviour
 {
     public bool noneIsPressed;
@@ -9,6 +9,11 @@ public class ButtonScript : MonoBehaviour
     public bool pullOffIsPressed;
     public bool slideIsPressed;
     public bool bendIsPressed;
+    public bool isRecordingPressed;
+    public string currentMode;
+
+    public GameObject startButton;
+
     private void Start()
     {
         noneIsPressed = true;
@@ -16,6 +21,8 @@ public class ButtonScript : MonoBehaviour
         pullOffIsPressed = false;
         slideIsPressed = false;
         bendIsPressed = false;
+        currentMode = "None";
+        isRecordingPressed = false;
     }
 
     public void OnClickNone()
@@ -25,6 +32,7 @@ public class ButtonScript : MonoBehaviour
         pullOffIsPressed = false;
         slideIsPressed = false;
         bendIsPressed = false;
+        currentMode = "None";
     }
     public void OnClickHammer()
     {
@@ -33,6 +41,7 @@ public class ButtonScript : MonoBehaviour
         pullOffIsPressed = false;
         slideIsPressed = false;
         bendIsPressed = false;
+        currentMode = "Hammer";
     }
     public void OnClickPullOff()
     {
@@ -41,6 +50,7 @@ public class ButtonScript : MonoBehaviour
         pullOffIsPressed = true;
         slideIsPressed = false;
         bendIsPressed = false;
+        currentMode = "PullOff";
     }
     public void OnClickSlide()
     {
@@ -49,6 +59,7 @@ public class ButtonScript : MonoBehaviour
         pullOffIsPressed = false;
         slideIsPressed = true;
         bendIsPressed = false;
+        currentMode = "Slide";
     }
 
     public void OnClickBend()
@@ -58,5 +69,16 @@ public class ButtonScript : MonoBehaviour
         pullOffIsPressed = false;
         slideIsPressed = false;
         bendIsPressed = true;
+        currentMode = "Bend";
+    }
+    public void OnClickStartRecord()
+    {
+        isRecordingPressed = true;
+        startButton.GetComponent<Image>().color = Color.red;
+    }
+    public void OnClickStopRecord()
+    {
+        isRecordingPressed = false;
+        startButton.GetComponent<Image>().color = Color.white;
     }
 }

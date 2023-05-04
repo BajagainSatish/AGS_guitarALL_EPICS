@@ -11,61 +11,61 @@ public class AudioAnalyzer : MonoBehaviour
 
     Dictionary<float, string> n = new Dictionary<float, string>()
     {
-    {73.42f, "D2"},
-    {77.78f, "D#2"},
-    {82.41f, "E2"},
-    {87.31f, "F2"},
-    {92.50f, "F#2"},
-    {98.00f, "G2"},
-    {103.83f, "G#2"},
-    {110.00f, "A2"},
-    {116.54f, "A#2"},
-    {123.47f, "B2"},
-    {130.81f, "C3"},
-    {138.59f, "C#3"},
-    {146.83f, "D3"},
-    {155.56f, "D#3"},
-    {164.81f, "E3"},
-    {174.61f, "F3"},
-    {185.00f, "F#3"},
-    {196.00f, "G3"},
-    {207.65f, "G#3"},
-    {220.00f, "A3"},
-    {233.08f, "A#3"},
-    {246.94f, "B3"},
-    {261.63f, "C4"},
-    {277.18f, "C#4"},
-    {293.66f, "D4"},
-    {311.13f, "D#4"},
-    {329.63f, "E4"},
-    {349.23f, "F4"},
-    {369.99f, "F#4"},
-    {392.00f, "G4"},
-    {415.30f, "G#4"},
-    {440.00f, "A4"},
-    {466.16f, "A#4"},
-    {493.88f, "B4"},
-    {523.25f, "C5"},
-    {554.37f, "C#5"},
-    {587.33f, "D5"},
-    {622.25f, "D#5"},
-    {659.25f, "E5"},
-    {698.46f, "F5"},
-    {739.99f, "F#5"},
-    {783.99f, "G5"},
-    {830.61f, "G#5"},
-    {880.00f, "A5"},
-    {932.33f, "A#5"},
-    {987.77f, "B5"},//here, 958.69
-    {1046.50f,"C6"}
+    {73.42f, "D"},
+    {77.78f, "D#"},
+    {82.41f, "E"},
+    {87.31f, "F"},
+    {92.50f, "F#"},
+    {98.00f, "G"},
+    {103.83f, "G#"},
+    {110.00f, "A"},
+    {116.54f, "A#"},
+    {123.47f, "B"},
+    {130.81f, "C"},
+    {138.59f, "C#"},
+    {146.83f, "D"},
+    {155.56f, "D#"},
+    {164.81f, "E"},
+    {174.61f, "F"},
+    {185.00f, "F#"},
+    {196.00f, "G"},
+    {207.65f, "G#"},
+    {220.00f, "A"},
+    {233.08f, "A#"},
+    {246.94f, "B"},
+    {261.63f, "C"},
+    {277.18f, "C#"},
+    {293.66f, "D"},
+    {311.13f, "D#"},
+    {329.63f, "E"},
+    {349.23f, "F"},
+    {369.99f, "F#"},
+    {392.00f, "G"},
+    {415.30f, "G#"},
+    {440.00f, "A"},
+    {466.16f, "A#"},
+    {493.88f, "B"},
+    {523.25f, "C"},
+    {554.37f, "C#"},
+    {587.33f, "D"},
+    {622.25f, "D#"},
+    {659.25f, "E"},
+    {698.46f, "F"},
+    {739.99f, "F#"},
+    {783.99f, "G"},
+    {830.61f, "G#"},
+    {880.00f, "A"},
+    {932.33f, "A#"},
+    {987.77f, "B"},//here, 958.69
+    {1046.50f,"C"}
     };
 
-    float[] notes = new float[] { 73.42f, 77.78f, 82.41f, 87.31f, 92.50f, 98.00f, 103.83f, 110.00f, 116.54f, 123.47f, 130.81f, 138.59f, 146.83f, 155.56f, 164.81f, 174.61f, 185.00f, 196.00f, 207.65f, 220.00f, 233.08f, 246.94f, 261.63f, 277.18f, 293.66f, 311.13f, 329.63f, 349.23f, 369.99f, 392.00f, 415.30f, 440.00f, 466.16f, 493.88f, 523.25f, 554.37f, 587.33f, 622.25f, 659.25f, 698.46f, 739.99f, 783.99f, 830.61f, 880.00f, 932.33f, 987.77f, 1046.50f};
+    readonly float[] notes = new float[] { 73.42f, 77.78f, 82.41f, 87.31f, 92.50f, 98.00f, 103.83f, 110.00f, 116.54f, 123.47f, 130.81f, 138.59f, 146.83f, 155.56f, 164.81f, 174.61f, 185.00f, 196.00f, 207.65f, 220.00f, 233.08f, 246.94f, 261.63f, 277.18f, 293.66f, 311.13f, 329.63f, 349.23f, 369.99f, 392.00f, 415.30f, 440.00f, 466.16f, 493.88f, 523.25f, 554.37f, 587.33f, 622.25f, 659.25f, 698.46f, 739.99f, 783.99f, 830.61f, 880.00f, 932.33f, 987.77f, 1046.50f};
     void Start()
     {
         autocorrelation = new float[4096];
     }
-    public void Interpret(float[] audioData, int sampleRate)
+    public string Interpret(float[] audioData, int sampleRate)
     {
         float[] ac = AutocorrelationWithShiftingLag(audioData);
         float[] normalized = MaxAbsoluteScaling(ac);
@@ -75,9 +75,11 @@ public class AudioAnalyzer : MonoBehaviour
         float closestNote = GetClosestNoteFrequency(fundamentalFrequency);
         string note_letter = GetNoteLetter(closestNote);
 
-        Debug.Log("Fundamental Frequency: " + fundamentalFrequency);
+        //Debug.Log("Fundamental Frequency: " + fundamentalFrequency);
         Debug.Log("Closest Note: " + closestNote);
         Debug.Log("Note Letter: " + note_letter);
+
+        return note_letter;
     }
 
     //autocorrelation function
@@ -151,9 +153,12 @@ public class AudioAnalyzer : MonoBehaviour
 
     float GetClosestNoteFrequency(float frequency)
     {
+        if (frequency == 958.6957f)
+        {
+            return 987.77f;
+        }
         float smallestDifference = float.MaxValue;
         float closestNote = float.MaxValue;
-
         for (int i = 0; i < notes.Length; i++)
         {
             float difference = Mathf.Abs(frequency - (float)notes[i]);
@@ -164,12 +169,6 @@ public class AudioAnalyzer : MonoBehaviour
                 closestNote = (float)notes[i];
             }
         }
-
-        if (frequency == 958.6957f)
-        {
-            return 987.77f;
-        }
-
         return closestNote;
     }
     string GetNoteLetter(float frequency)
