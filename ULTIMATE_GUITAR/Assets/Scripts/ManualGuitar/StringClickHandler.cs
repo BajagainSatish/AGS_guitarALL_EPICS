@@ -2,10 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Audio;
+using TMPro;
 public class StringClickHandler : MonoBehaviour
 {
     public GuitarSoundManager guitarSoundManager;
     public ButtonScript buttonScript;
+    private SphereController sphereControllerScript;
 
     private Vector3 initialMousePosition;
     private bool isDraggingVertical = false;
@@ -14,6 +16,10 @@ public class StringClickHandler : MonoBehaviour
     private float tempFret;
     private int fretNum;
     private int strNum;
+
+    public TMP_InputField userInputField;
+    private int userFretNum;//finger press purpose
+    [SerializeField] private ParticleSystem glowEffect;
 
     private float startPitch;
     private float endPitch;
@@ -24,6 +30,18 @@ public class StringClickHandler : MonoBehaviour
     private bool audioPlayed = false;
 
     [SerializeField] private LayerMask layerMask;
+
+    public void FretNumInput() {
+        userFretNum = int.Parse(userInputField.text);
+        //Debug.Log("Num: " + userInputField.text);
+    }
+
+    private void Start()
+    {
+        sphereControllerScript = GetComponent<SphereController>();
+        userFretNum = 0;
+    }
+
     private void Update()
     {
         if (Input.GetMouseButtonDown(0))
@@ -34,14 +52,14 @@ public class StringClickHandler : MonoBehaviour
             if (Physics.Raycast(ray, out RaycastHit hit))
             {
                 //Debug.Log(hit.collider.gameObject.name);
-                Debug.DrawRay(ray.origin, ray.direction * hit.distance, Color.red);
+                //Debug.DrawRay(ray.origin, ray.direction * hit.distance, Color.red);
                 if (hit.collider.CompareTag("String"))
                 {
                     // Handle string click
                     GameObject stringClicked = hit.transform.gameObject;
                     GuitarString guitarStringScript = stringClicked.GetComponent<GuitarString>();
                     strNum = guitarStringScript.Return_String_Number();
-                    Debug.Log("String " + strNum);
+                    //Debug.Log("String " + strNum);
 
                     //change layer of string to Ignore Raycast so that now fret is detected
                     //Debug.Log("Initial layer of string:" + stringClicked.gameObject.layer);//initial which is string
@@ -55,77 +73,120 @@ public class StringClickHandler : MonoBehaviour
                     if (Physics.Raycast(raySecond, out hitAgain, layerMask))
                     {
                         //Debug.Log(hitAgain.collider.gameObject.name);//gives fret name
-                        Debug.DrawRay(raySecond.origin, raySecond.direction * hitAgain.distance, Color.yellow);
+                        //Debug.DrawRay(raySecond.origin, raySecond.direction * hitAgain.distance, Color.yellow);
                         if (hitAgain.collider.CompareTag("Fret"))
                         {
                             //find the fret number
                             GameObject fretClicked = hitAgain.transform.gameObject;
                             FretNum fretNumScript = fretClicked.GetComponent<FretNum>();
                             fretNum = fretNumScript.Return_Fret_Num();
-                            Debug.Log("Fret " + fretNum);
+                            //Debug.Log("Fret " + fretNum);
 
-                            //Bend String Code Implementation
-                            if (buttonScript.bendIsPressed)
+                            //None is pressed, with fret num input
+                            if (buttonScript.noneIsPressed)
+                            {
+                                sphereControllerScript.MoveSphereOverString(strNum, (float)userFretNum);//sphere act as finger press
+                                if (userFretNum == 0)
+                                {
+                                    PlayGlowEffect(hitAgain.point);//particle effect
+                                    guitarSoundManager.PlayFretSound(fretNum, strNum);
+                                }
+                                else if (userFretNum >= 1 && userFretNum <= 20)
+                                {
+                                    if (fretNum == 0)
+                                    {
+                                        PlayGlowEffect(hitAgain.point);//particle effect
+                                        guitarSoundManager.PlayFretSound(userFretNum, strNum);//when open played, play finger press fret note
+                                    }
+                                    if (fretNum > userFretNum)
+                                    {
+                                        PlayGlowEffect(hitAgain.point);//particle effect
+                                        guitarSoundManager.PlayFretSound(fretNum, strNum);
+                                    }
+                                }
+                            }
+
+                            //Hammer and Pull Off Code Implementation
+                            //Hammer logic = play open/finger press sound, then pressed sound on fret
+                            if (buttonScript.hammerIsPressed)
+                            {
+                                sphereControllerScript.MoveSphereOverString(strNum, userFretNum);
+                                if (userFretNum == 0)
+                                {
+                                    if (fretNum != 0)
+                                    {
+                                        PlayGlowEffect(hitAgain.point);//particle effect
+                                        guitarSoundManager.PlayFretSound(0, strNum);//for now nothing like kepo or finger press so 0
+                                                                                    //Now the code inside if (Input.GetMouseButtonUp(0)) will also be executed
+                                    }
+                                    else if (fretNum == 0)//no hammer for open string
+                                    {
+                                        //guitarSoundManager.PlayFretSound(fretNum, strNum);//just normal
+                                    }
+                                }
+                                else if (userFretNum >= 1 && userFretNum <= 20)
+                                {
+                                    if (fretNum > userFretNum)
+                                    {
+                                        if (fretNum != 0)
+                                        {
+                                            PlayGlowEffect(hitAgain.point);//particle effect
+                                            guitarSoundManager.PlayFretSound(userFretNum, strNum);//for now nothing like kepo
+                                                                                                  //Now the code inside if (Input.GetMouseButtonUp(0)) will also be executed
+                                        }
+                                        else if (fretNum == 0)
+                                        {
+                                            PlayGlowEffect(hitAgain.point);//particle effect
+                                            guitarSoundManager.PlayFretSound(userFretNum, strNum);//just normal finger press
+                                        }
+                                    }                                   
+                                }
+                            }
+
+                            //PUll off logic = play pressed fret sound, then open/finger press
+                            if (buttonScript.pullOffIsPressed)
+                            {
+                                sphereControllerScript.MoveSphereOverString(strNum,userFretNum);
+                                if(fretNum > userFretNum)
+                                {
+                                    PlayGlowEffect(hitAgain.point);//particle effect
+                                    guitarSoundManager.PlayFretSound(fretNum, strNum);
+                                }
+                                    //Now the code inside if (Input.GetMouseButtonUp(0)) will also be executed
+                            }
+                        }
+                        // END Hammer and Pull Off Code Implementation
+
+                        //Sliding Code Implementation
+                        if (buttonScript.slideIsPressed)
+                        {
+                            sphereControllerScript.MoveSphereOverString(strNum, (float)userFretNum);//sphere act as finger press
+                            if (fretNum > userFretNum)
+                            {
+                                tempFret = fretNum;
+                                isDraggingHorizontal = true;
+                                initialMousePosition = Input.mousePosition;
+                                //code inside Input.GetMouseButton(0) && isDraggingHorizontal is implemented
+                            }
+                        }
+                        //Sliding Code Implementation End
+
+                        //Bend String Code Implementation
+                        if (buttonScript.bendIsPressed)
+                        {
+                            sphereControllerScript.MoveSphereOverString(strNum, userFretNum);
+                            if (fretNum > userFretNum)
                             {
                                 //better approach, actual bend
                                 isDraggingVertical = true;
                                 initialMousePosition = Input.mousePosition;
+                                PlayGlowEffect(hitAgain.point);//particle effect
                                 guitarSoundManager.PlayFretSound(fretNum, strNum);//played just once here
-                                //now code inside if(INput.getmousebutton(0) && isDraggingVertical) is executed
-                            }
-                            //code verticalDisplacement = Input.mousePosition.y - inputPosition.y inside another if block
-                            //Bend String Code Implementation
-
-
-                            //Hammer and Pull Off Code Implementation
-                            //Hammer logic = First play open string sound(no finger or kepo press for now)
-                            if (buttonScript.hammerIsPressed)
-                            {
-                                if (fretNum != 0)//no hammer for open string
-                                {
-                                    guitarSoundManager.PlayFretSound(0, strNum);//for now nothing like kepo or finger press so 0
-                                                                                //Now the code inside if (Input.GetMouseButtonUp(0)) will also be executed
-                                }
-                                else if (fretNum == 0)
-                                {
-                                    guitarSoundManager.PlayFretSound(fretNum, strNum);//just normal
-                                }
-                            }
-
-
-                            //Play the sound
-                            if (buttonScript.noneIsPressed)
-                            {
-                                guitarSoundManager.PlayFretSound(fretNum, strNum);
-                            }
-
-                            //PUll off logic = play openstring sound for now immediately after sound play
-                            if (buttonScript.pullOffIsPressed)
-                            {
-                                if (fretNum != 0)//no pull off for open string
-                                {
-                                    guitarSoundManager.PlayFretSound(fretNum, strNum);
-                                    //Now the code inside if (Input.GetMouseButtonUp(0)) will also be executed
-                                }
-                                else if (fretNum == 0)
-                                {
-                                    guitarSoundManager.PlayFretSound(fretNum, strNum);//just normal
-                                }
+                                                                                  //now code inside if(INput.getmousebutton(0) && isDraggingVertical) is executed
                             }
                         }
-                        //Hammer and Pull Off Code Implementation END
-
-                        //Sliding Code Implementation
-
-                        if (buttonScript.slideIsPressed)
-                        {
-                            tempFret = fretNum;
-                            isDraggingHorizontal = true;
-                            initialMousePosition = Input.mousePosition;
-                            //code inside Input.GetMouseButton(0) && isDraggingHorizontal is implemented
-                        }
-                        //Sliding Code Implementation End
-
+                        //code verticalDisplacement = Input.mousePosition.y - inputPosition.y inside another if block
+                        //Bend String Code Implementation
                     }
 
                     //Restore layer of string gameobject
@@ -142,6 +203,8 @@ public class StringClickHandler : MonoBehaviour
         }
         if (Input.GetMouseButton(0) && isDraggingVertical)
         {
+            if (fretNum > userFretNum)
+            {
             verticalDisplacement = Input.mousePosition.y - initialMousePosition.y;
             /* BEND APPROACH 1, SIMILAR TO SLIDE EFFECT
             if ((verticalDisplacement >= 5f && verticalDisplacement < 25f) || (verticalDisplacement <= -5f && verticalDisplacement >= -25f))//increase to next note
@@ -166,7 +229,7 @@ public class StringClickHandler : MonoBehaviour
             {
                 /////OMGGGGGGGGGGG GENIUSSSSS
                 startPitch = Mathf.Pow(2f, fretNum / 12f);
-                endPitch = Mathf.Pow(2f, (fretNum+3) / 12f);
+                endPitch = Mathf.Pow(2f, (fretNum+2) / 12f);
                 if (timer < duration)
                 {
                     // Calculate the new pitch based on the progress of the bend
@@ -180,15 +243,23 @@ public class StringClickHandler : MonoBehaviour
                     timer += Time.deltaTime;
                 }
             }
-
+            }
         }
         if (Input.GetMouseButton(0) && isDraggingHorizontal)
         {
+            if (fretNum > userFretNum)
+            {
             horizontalDisplacement = initialMousePosition.x - Input.mousePosition.x;
             if (horizontalDisplacement >= 10f || horizontalDisplacement <= -10f)
             {
                 if (!audioPlayed)
                 {
+                    Ray raySlide = Camera.main.ScreenPointToRay(Input.mousePosition);
+                        RaycastHit rayCastHitSlide;
+                        if (Physics.Raycast(raySlide,out rayCastHitSlide))
+                        {
+                            PlayGlowEffect(rayCastHitSlide.point);//particle effect
+                        }
                     guitarSoundManager.PlayFretSound(fretNum, strNum);
                     audioPlayed = true;
                 }
@@ -196,8 +267,8 @@ public class StringClickHandler : MonoBehaviour
                 Ray multipleRays = Camera.main.ScreenPointToRay(Input.mousePosition);
                 if (Physics.Raycast(multipleRays, out RaycastHit hitMultipleRays, layerMask))
                 {
-                    Debug.Log(hitMultipleRays.collider.gameObject.name);//gives fret name
-                    Debug.DrawRay(multipleRays.origin, multipleRays.direction * hitMultipleRays.distance, Color.red);
+                    //Debug.Log(hitMultipleRays.collider.gameObject.name);//gives fret name
+                    //Debug.DrawRay(multipleRays.origin, multipleRays.direction * hitMultipleRays.distance, Color.red);
 
                     if (hitMultipleRays.collider.CompareTag("String"))
                     {
@@ -205,7 +276,7 @@ public class StringClickHandler : MonoBehaviour
                         GameObject stringClicked = hitMultipleRays.transform.gameObject;
                         GuitarString guitarStringScript = stringClicked.GetComponent<GuitarString>();
                         strNum = guitarStringScript.Return_String_Number();
-                        Debug.Log("String " + strNum);
+                        //Debug.Log("String " + strNum);
 
                         //change layer of string to Ignore Raycast so that now fret is detected
                         //Debug.Log("Initial layer of string:" + stringClicked.gameObject.layer);//initial which is string
@@ -218,14 +289,14 @@ public class StringClickHandler : MonoBehaviour
                         if (Physics.Raycast(multipleRaysAgain, out RaycastHit multipleRayshitAgain, layerMask))
                         {
                             //Debug.Log(hitAgain.collider.gameObject.name);//gives fret name
-                            Debug.DrawRay(multipleRaysAgain.origin, multipleRaysAgain.direction * multipleRayshitAgain.distance, Color.yellow);
+                            //Debug.DrawRay(multipleRaysAgain.origin, multipleRaysAgain.direction * multipleRayshitAgain.distance, Color.yellow);
                             if (multipleRayshitAgain.collider.CompareTag("Fret"))
                             {
                                 //find the fret number
                                 GameObject fretClicked = multipleRayshitAgain.transform.gameObject;
                                 FretNum fretNumScript = fretClicked.GetComponent<FretNum>();
                                 fretNum = fretNumScript.Return_Fret_Num();
-                                Debug.Log("Fret " + fretNum);
+                                //Debug.Log("Fret " + fretNum);
                             }
                         }
 
@@ -241,8 +312,8 @@ public class StringClickHandler : MonoBehaviour
                         Ray multipleRays2 = Camera.main.ScreenPointToRay(Input.mousePosition);
                         if (Physics.Raycast(multipleRays2, out RaycastHit hitMultipleRays2, layerMask))
                         {
-                            Debug.Log(hitMultipleRays2.collider.gameObject.name);//gives fret name
-                            Debug.DrawRay(multipleRays2.origin, multipleRays2.direction * hitMultipleRays2.distance, Color.red);
+                            //Debug.Log(hitMultipleRays2.collider.gameObject.name);//gives fret name
+                            //Debug.DrawRay(multipleRays2.origin, multipleRays2.direction * hitMultipleRays2.distance, Color.red);
 
                             if (hitMultipleRays2.collider.CompareTag("String"))
                             {
@@ -250,7 +321,7 @@ public class StringClickHandler : MonoBehaviour
                                 GameObject stringClicked = hitMultipleRays2.transform.gameObject;
                                 GuitarString guitarStringScript = stringClicked.GetComponent<GuitarString>();
                                 strNum = guitarStringScript.Return_String_Number();
-                                Debug.Log("String " + strNum);
+                                //Debug.Log("String " + strNum);
 
                                 //change layer of string to Ignore Raycast so that now fret is detected
                                 //Debug.Log("Initial layer of string:" + stringClicked.gameObject.layer);//initial which is string
@@ -260,19 +331,21 @@ public class StringClickHandler : MonoBehaviour
 
                                 //now we check if the fret has been clicked or not
                                 Ray multipleRaysAgain2 = Camera.main.ScreenPointToRay(Input.mousePosition);
-                                if (Physics.Raycast(multipleRaysAgain2, out RaycastHit multipleRayshitAgain2, layerMask))
+                                    RaycastHit hitAgain2;
+                                if (Physics.Raycast(multipleRaysAgain2, out hitAgain2, layerMask))
                                 {
                                     //Debug.Log(hitAgain.collider.gameObject.name);//gives fret name
-                                    Debug.DrawRay(multipleRaysAgain2.origin, multipleRaysAgain2.direction * multipleRayshitAgain2.distance, Color.yellow);
-                                    if (multipleRayshitAgain2.collider.CompareTag("Fret"))
+                                    //Debug.DrawRay(multipleRaysAgain2.origin, multipleRaysAgain2.direction * hitAgain2.distance, Color.yellow);
+                                    if (hitAgain2.collider.CompareTag("Fret"))
                                     {
                                         //find the fret number
-                                        GameObject fretClicked = multipleRayshitAgain2.transform.gameObject;
+                                        GameObject fretClicked = hitAgain2.transform.gameObject;
                                         FretNum fretNumScript = fretClicked.GetComponent<FretNum>();
                                         fretNum = fretNumScript.Return_Fret_Num();
-                                        Debug.Log("Fret " + fretNum);
+                                        //Debug.Log("Fret " + fretNum);
+                                        PlayGlowEffect(hitAgain2.point);
+                                        }
                                     }
-                                }
                                 //Restore layer of string gameobject
                                 int stringLayer = LayerMask.NameToLayer("String");
                                 stringClicked.layer = stringLayer;
@@ -283,13 +356,17 @@ public class StringClickHandler : MonoBehaviour
                         audioPlayed = false;
                         if (!audioPlayed)
                         {
+                                if (fretNum > userFretNum)
+                                {
                             guitarSoundManager.PlayFretSound(fretNum, strNum);
                             audioPlayed = true;
+                                }
                         }
                         tempFret = fretNum;
                     }
                 }
 
+            }
             }
         }
     
@@ -298,26 +375,39 @@ public class StringClickHandler : MonoBehaviour
         {
             if (buttonScript.hammerIsPressed)
             {
-                if (fretNum != 0)//no hammer for open string
+                if (fretNum > userFretNum)
                 {
-                    guitarSoundManager.PlayFretSound(fretNum, strNum);
-                }               
+                    if (fretNum != 0)//no hammer for open string
+                    {
+                        guitarSoundManager.PlayFretSound(fretNum, strNum);//independent of finger press
+                    }
+                }
             }
             if (buttonScript.pullOffIsPressed)
             {
-                if (fretNum != 0)//no pull off for open string
+                if (fretNum > userFretNum)
                 {
-                    guitarSoundManager.PlayFretSound(0, strNum);
-                }
+                    if (fretNum != 0)//no pull off for open string, means play open/finger press sound
+                    {
+                        if (userFretNum != 0)
+                        {
+                            guitarSoundManager.PlayFretSound(userFretNum, strNum);
+                        }
+                        if (userFretNum == 0)
+                        {
+                            guitarSoundManager.PlayFretSound(0, strNum);
+                        }
+                    }
+                }          
             }
             if (isDraggingVertical)
             {
-                Debug.Log("Vertical displacement: " + verticalDisplacement);
+                //Debug.Log("Vertical displacement: " + verticalDisplacement);
             }
 
             if (isDraggingHorizontal)
             {
-                Debug.Log("Horizontal displacement: " + horizontalDisplacement);
+                //Debug.Log("Horizontal displacement: " + horizontalDisplacement);
             }
             isDraggingVertical = false;
             isDraggingHorizontal = false;
@@ -327,6 +417,11 @@ public class StringClickHandler : MonoBehaviour
             timer = 0;
             currentPitch = fretNum;
         }
+    }
+    private void PlayGlowEffect(Vector3 givenMousePosition)
+    {
+        glowEffect.transform.position = new Vector3(givenMousePosition.x,givenMousePosition.y,givenMousePosition.z);
+        glowEffect.Play();
     }
 }
 

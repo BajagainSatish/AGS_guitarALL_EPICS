@@ -7,16 +7,16 @@ using System.IO;
 
 public class GuitarSoundManager : MonoBehaviour
 {
-    public AudioSource Elow;
-    public AudioSource A;
-    public AudioSource D;
-    public AudioSource G;
-    public AudioSource B;
-    public AudioSource Ehigh;
+    [SerializeField] private AudioSource Elow;
+    [SerializeField] private AudioSource A;
+    [SerializeField] private AudioSource D;
+    [SerializeField] private AudioSource G;
+    [SerializeField] private AudioSource B;
+    [SerializeField] private AudioSource Ehigh;
     public AudioSource stringSound;//accessed by another script
 
-    public AudioAnalyzer audioAnalyzer;
-    public ButtonScript buttonScript;
+    [SerializeField] private AudioAnalyzer audioAnalyzer;
+    [SerializeField] private ButtonScript buttonScript;
     private GuitarSoundManager guitarSoundManager;
 
     [SerializeField] private string fileName;
@@ -30,8 +30,8 @@ public class GuitarSoundManager : MonoBehaviour
     private void Start()
     {
         // Initialize pitch adjustments array
-        pitchAdjustments = new float[21];//open string + 20 frets
-        for (int i = 0; i < 21; i++)
+        pitchAdjustments = new float[24];//open string + 23 frets
+        for (int i = 0; i < 24; i++)
         {
             pitchAdjustments[i] = Mathf.Pow(2f, i/12f);
         }
@@ -43,6 +43,7 @@ public class GuitarSoundManager : MonoBehaviour
         _audioData = new float[sampleSize];
 
         //storeData = FileHandler.ReadFromJSON<StorePlayedNote>(fileName);//verify if reading works, allows to append new values to previous values
+        JsonCompare.DisplayNotes();
     }
 
     public void PlayFretSound(int fretNum, int strNum)
