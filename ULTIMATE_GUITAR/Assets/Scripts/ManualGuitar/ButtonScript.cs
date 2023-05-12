@@ -9,6 +9,7 @@ public class ButtonScript : MonoBehaviour
     public bool pullOffIsPressed;
     public bool slideIsPressed;
     public bool bendIsPressed;
+    public bool strumIsPressed;
     public bool isRecordingPressed;
     public string currentMode;
 
@@ -21,6 +22,7 @@ public class ButtonScript : MonoBehaviour
         pullOffIsPressed = false;
         slideIsPressed = false;
         bendIsPressed = false;
+        strumIsPressed = false;
         currentMode = "None";
         isRecordingPressed = false;
     }
@@ -32,6 +34,7 @@ public class ButtonScript : MonoBehaviour
         pullOffIsPressed = false;
         slideIsPressed = false;
         bendIsPressed = false;
+        strumIsPressed = false;
         currentMode = "None";
     }
     public void OnClickHammer()
@@ -41,6 +44,7 @@ public class ButtonScript : MonoBehaviour
         pullOffIsPressed = false;
         slideIsPressed = false;
         bendIsPressed = false;
+        strumIsPressed = false;
         currentMode = "Hammer";
     }
     public void OnClickPullOff()
@@ -50,6 +54,7 @@ public class ButtonScript : MonoBehaviour
         pullOffIsPressed = true;
         slideIsPressed = false;
         bendIsPressed = false;
+        strumIsPressed = false;
         currentMode = "PullOff";
     }
     public void OnClickSlide()
@@ -59,6 +64,7 @@ public class ButtonScript : MonoBehaviour
         pullOffIsPressed = false;
         slideIsPressed = true;
         bendIsPressed = false;
+        strumIsPressed = false;
         currentMode = "Slide";
     }
 
@@ -69,8 +75,21 @@ public class ButtonScript : MonoBehaviour
         pullOffIsPressed = false;
         slideIsPressed = false;
         bendIsPressed = true;
+        strumIsPressed = false;
         currentMode = "Bend";
     }
+
+    public void OnClickStrum()
+    {
+        noneIsPressed = false;
+        hammerIsPressed = false;
+        pullOffIsPressed = false;
+        slideIsPressed = false;
+        bendIsPressed = false;
+        strumIsPressed = true;
+        currentMode = "Strum";
+    }
+
     public void OnClickStartRecord()
     {
         isRecordingPressed = true;

@@ -7,8 +7,6 @@ public class GuitarString : MonoBehaviour
     private int stringNumber;
     private string string_name;
     private Rigidbody actualString;
-    //private bool isPressed = false;
-
     private void Awake()
     {
         actualString = GetComponent<Rigidbody>();

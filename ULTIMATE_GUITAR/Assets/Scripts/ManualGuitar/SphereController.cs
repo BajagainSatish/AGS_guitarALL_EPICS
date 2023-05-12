@@ -211,38 +211,44 @@ public class SphereController : MonoBehaviour
         SEhigh.transform.position = new Vector3(0.8834f, -0.0206f, -0.344f);
     }
 
-    public void MoveSphereOverString(int stringNumber, float fretNumber)
+    public void MoveSphereOverString(int stringNumber, int[] all6Frets)
     {
-        float newSpherePositionX = fretSphereDicX[fretNumber];
+        float fretNumber;
         if (stringNumber == 1)
         {
+            fretNumber = all6Frets[0];
             float spherePosYElow = spherePosElow[fretNumber];
-            SElow.transform.position = new Vector3(newSpherePositionX, spherePosYElow, -0.344f);
+            SElow.transform.position = new Vector3(fretSphereDicX[fretNumber], spherePosYElow, -0.344f);
         }
         else if (stringNumber == 2)
         {
+            fretNumber = all6Frets[1];
             float spherePosYA = spherePosA[fretNumber];
-            SA.transform.position = new Vector3(newSpherePositionX, spherePosYA, -0.344f);
+            SA.transform.position = new Vector3(fretSphereDicX[fretNumber], spherePosYA, -0.344f);
         }
         else if (stringNumber == 3)
         {
+            fretNumber = all6Frets[2];
             float spherePosYD = spherePosD[fretNumber];
-            SD.transform.position = new Vector3(newSpherePositionX, spherePosYD, -0.344f);
+            SD.transform.position = new Vector3(fretSphereDicX[fretNumber], spherePosYD, -0.344f);
         }
         else if (stringNumber == 4)
         {
+            fretNumber = all6Frets[3];
             float spherePosYG = spherePosG[fretNumber];
-            SG.transform.position = new Vector3(newSpherePositionX, spherePosYG, -0.344f);
+            SG.transform.position = new Vector3(fretSphereDicX[fretNumber], spherePosYG, -0.344f);
         }
         else if (stringNumber == 5)
         {
+            fretNumber = all6Frets[4];
             float spherePosYB = spherePosB[fretNumber];
-            SB.transform.position = new Vector3(newSpherePositionX, spherePosYB, -0.344f);
+            SB.transform.position = new Vector3(fretSphereDicX[fretNumber], spherePosYB, -0.344f);
         }
         else if (stringNumber == 6)
         {
+            fretNumber = all6Frets[5];
             float spherePosYEhigh = spherePosEhigh[fretNumber];
-            SEhigh.transform.position = new Vector3(newSpherePositionX, spherePosYEhigh, -0.344f);
+            SEhigh.transform.position = new Vector3(fretSphereDicX[fretNumber], spherePosYEhigh, -0.344f);
         }
     }
 }

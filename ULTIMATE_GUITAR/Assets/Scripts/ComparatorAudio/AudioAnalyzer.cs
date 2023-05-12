@@ -57,10 +57,13 @@ public class AudioAnalyzer : MonoBehaviour
     {880.00f, "A"},
     {932.33f, "A#"},
     {987.77f, "B"},//here, 958.69
-    {1046.50f,"C"}
+    {1046.50f,"C"},
+    {1108.73f, "C#"},//here,1075.61f
+    {1174.66f, "D"},//here,1130.769f
+    {1244.51f, "D#"}
     };
 
-    readonly float[] notes = new float[] { 73.42f, 77.78f, 82.41f, 87.31f, 92.50f, 98.00f, 103.83f, 110.00f, 116.54f, 123.47f, 130.81f, 138.59f, 146.83f, 155.56f, 164.81f, 174.61f, 185.00f, 196.00f, 207.65f, 220.00f, 233.08f, 246.94f, 261.63f, 277.18f, 293.66f, 311.13f, 329.63f, 349.23f, 369.99f, 392.00f, 415.30f, 440.00f, 466.16f, 493.88f, 523.25f, 554.37f, 587.33f, 622.25f, 659.25f, 698.46f, 739.99f, 783.99f, 830.61f, 880.00f, 932.33f, 987.77f, 1046.50f};
+    readonly float[] notes = new float[] { 73.42f, 77.78f, 82.41f, 87.31f, 92.50f, 98.00f, 103.83f, 110.00f, 116.54f, 123.47f, 130.81f, 138.59f, 146.83f, 155.56f, 164.81f, 174.61f, 185.00f, 196.00f, 207.65f, 220.00f, 233.08f, 246.94f, 261.63f, 277.18f, 293.66f, 311.13f, 329.63f, 349.23f, 369.99f, 392.00f, 415.30f, 440.00f, 466.16f, 493.88f, 523.25f, 554.37f, 587.33f, 622.25f, 659.25f, 698.46f, 739.99f, 783.99f, 830.61f, 880.00f, 932.33f, 987.77f, 1046.50f, 1108.73f, 1174.66f, 1244.51f};
     void Start()
     {
         autocorrelation = new float[4096];
@@ -76,7 +79,7 @@ public class AudioAnalyzer : MonoBehaviour
         string note_letter = GetNoteLetter(closestNote);
 
         //Debug.Log("Fundamental Frequency: " + fundamentalFrequency);
-        Debug.Log("Closest Note: " + closestNote);
+        //Debug.Log("Closest Note: " + closestNote);
         Debug.Log("Note Letter: " + note_letter);
 
         return note_letter;
@@ -143,7 +146,7 @@ public class AudioAnalyzer : MonoBehaviour
         for (int i = 1; i <= 5; i++)
         {
             float currentHarmonic = frequency / i;
-            if (currentHarmonic < 1050)
+            if (currentHarmonic < 1250)
             {
                 return currentHarmonic;
             }
@@ -151,11 +154,19 @@ public class AudioAnalyzer : MonoBehaviour
         return frequency;
     }
 
-    float GetClosestNoteFrequency(float frequency)
+    float GetClosestNoteFrequency(float frequency)//work on this later, maybe frequency just greater than this frequency rather than closest note
     {
         if (frequency == 958.6957f)
         {
-            return 987.77f;
+            return 987.77f;//B fret 19
+        }
+        if (frequency == 1075.61f)
+        {
+            return 1108.73f;//C# fret 21
+        }
+        if (frequency == 1130.769f)
+        {
+            return 1174.66f;//D fret 22
         }
         float smallestDifference = float.MaxValue;
         float closestNote = float.MaxValue;
