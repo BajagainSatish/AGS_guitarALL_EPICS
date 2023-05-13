@@ -289,101 +289,72 @@ public class StringClickHandler : MonoBehaviour
                 }
             }
         }
-            /* BEND APPROACH 1, SIMILAR TO SLIDE EFFECT
-            if ((verticalDisplacement >= 5f && verticalDisplacement < 25f) || (verticalDisplacement <= -5f && verticalDisplacement >= -25f))//increase to next note
-            {
-                if (!audioPlayed)
-                {
-                    guitarSoundManager.PlayFretSound(fretNum + 1, strNum);
-                    audioPlayed = true;
-                }
-            }
-            if ((verticalDisplacement >= 25f) || (verticalDisplacement <= -25f))//increase to next note
-            {
-                if (!audioPlayed)
-                {
-                    guitarSoundManager.PlayFretSound(fretNum + 2, strNum);
-                    audioPlayed = true;
-                }
-            }
-            */
-            //BEND APPROACH 2
-        if (Input.GetMouseButton(0) && isDraggingVerticalBend)
+        if (buttonScript.strumIsPressed)
         {
-            if (RetFretSpecificString(strNum, userFingerNum) == 0 && userCapoNum == 0)//finger at 0, capo at 0
+            if (Input.GetMouseButtonDown(0))
             {
-                if (fretNum != 0)
+                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                if (Physics.Raycast(ray, out RaycastHit hit))
                 {
-                    verticalDisplacement = Input.mousePosition.y - initialMousePosition.y;
-                    if (verticalDisplacement >= 5f || verticalDisplacement <= -5f)//increase to next note
+                    if (hit.collider.CompareTag("String"))
                     {
-                        /////OMGGGGGGGGGGG GENIUSSSSS
-                        startPitch = Mathf.Pow(2f, fretNum / 12f);
-                        endPitch = Mathf.Pow(2f, (fretNum + 2) / 12f);
-                        if (timer < duration)
-                        {
-                            // Calculate the new pitch based on the progress of the bend
-                            float t = timer / duration;
-                            currentPitch = Mathf.Lerp(startPitch, endPitch, t);
+                        // Handle string click
+                        GameObject stringClicked = hit.transform.gameObject;
+                        GuitarString guitarStringScript = stringClicked.GetComponent<GuitarString>();
+                        strNum = guitarStringScript.Return_String_Number();
 
-                            // Set the pitch of the Audio Source to the new pitch
-                            guitarSoundManager.stringSound.pitch = currentPitch;
+                        //change layer of string to Ignore Raycast so that now fret is detected
+                        int LayerIgnoreRaycast = LayerMask.NameToLayer("Ignore Raycast");
+                        stringClicked.gameObject.layer = LayerIgnoreRaycast;
 
-                            // Increment the timer
-                            timer += Time.deltaTime;
-                        }
-                    }
-                }
-            }
-            else if (RetFretSpecificString(strNum, userFingerNum) > userCapoNum && RetFretSpecificString(strNum, userFingerNum) <= 23)//finger ahead capo
-            {
-                if (fretNum > RetFretSpecificString(strNum, userFingerNum))
-                {
-                    if (fretNum != 0)
-                    {
-                        verticalDisplacement = Input.mousePosition.y - initialMousePosition.y;
-                        if (verticalDisplacement >= 5f || verticalDisplacement <= -5f)//increase to next note
+                        //now we check strictly if the fret "0" has been clicked or not
+                        Ray raySecond = Camera.main.ScreenPointToRay(Input.mousePosition);
+                        RaycastHit hitAgain;
+                        if (Physics.Raycast(raySecond, out hitAgain, layerMask))
                         {
-                            /////OMGGGGGGGGGGG GENIUSSSSS
-                            startPitch = Mathf.Pow(2f, fretNum / 12f);
-                            endPitch = Mathf.Pow(2f, (fretNum + 2) / 12f);
-                            if (timer < duration)
+                            if (hitAgain.collider.CompareTag("Fret"))
                             {
-                                // Calculate the new pitch based on the progress of the bend
-                                float t = timer / duration;
-                                currentPitch = Mathf.Lerp(startPitch, endPitch, t);
+                                //find the fret number
+                                GameObject fretClicked = hitAgain.transform.gameObject;
+                                FretNum fretNumScript = fretClicked.GetComponent<FretNum>();
+                                fretNum = fretNumScript.Return_Fret_Num();
 
-                                // Set the pitch of the Audio Source to the new pitch
-                                guitarSoundManager.stringSound.pitch = currentPitch;
-
-                                // Increment the timer
-                                timer += Time.deltaTime;
+                                if (fretNum == 0)
+                                {
+                                    isDraggingVerticalStrum = true;
+                                    PlayGlowEffect(hitAgain.point);
+                                    if (userCapoNum > RetFretSpecificString(strNum,userFingerNum))
+                                    {
+                                        guitarSoundManager.PlayFretSound(userCapoNum,strNum);
+                                    }
+                                    else if (userCapoNum < RetFretSpecificString(strNum,userFingerNum))
+                                    {
+                                        guitarSoundManager.PlayFretSound(RetFretSpecificString(strNum, userFingerNum),strNum);
+                                    }
+                                    else
+                                    {
+                                        guitarSoundManager.PlayFretSound(0,strNum);
+                                    }
+                                }
                             }
+                            //now code inside Input.GetMouseButton(0) && isDraggingVerticalStrum is executed
                         }
+                    //Restore layer of string gameobject
+                    int stringLayer = LayerMask.NameToLayer("String");
+                    stringClicked.gameObject.layer = stringLayer;
+                    //Debug.Log("Updated layer of string:" + stringClicked.layer);
                     }
-                }
-            }
-            else if (userCapoNum > RetFretSpecificString(strNum, userFingerNum))
-            {
-                if (fretNum > userCapoNum)
-                {
-                    verticalDisplacement = Input.mousePosition.y - initialMousePosition.y;
-                    if (verticalDisplacement >= 5f || verticalDisplacement <= -5f)//increase to next note
+                    else if (hit.collider.CompareTag("Fret"))
                     {
-                        /////OMGGGGGGGGGGG GENIUSSSSS
-                        startPitch = Mathf.Pow(2f, fretNum / 12f);
-                        endPitch = Mathf.Pow(2f, (fretNum + 2) / 12f);
-                        if (timer < duration)
+                        //find the fret number
+                        GameObject fretClicked = hit.transform.gameObject;
+                        FretNum fretNumScript = fretClicked.GetComponent<FretNum>();
+                        fretNum = fretNumScript.Return_Fret_Num();
+
+                        if (fretNum == 0)
                         {
-                            // Calculate the new pitch based on the progress of the bend
-                            float t = timer / duration;
-                            currentPitch = Mathf.Lerp(startPitch, endPitch, t);
-
-                            // Set the pitch of the Audio Source to the new pitch
-                            guitarSoundManager.stringSound.pitch = currentPitch;
-
-                            // Increment the timer
-                            timer += Time.deltaTime;
+                            isDraggingVerticalStrum = true;
+                            PlayGlowEffect(hit.point);
                         }
                     }
                 }
@@ -532,6 +503,129 @@ public class StringClickHandler : MonoBehaviour
             }
             }
         }
+        if (Input.GetMouseButton(0) && isDraggingVerticalBend)
+        {
+            if (RetFretSpecificString(strNum, userFingerNum) == 0 && userCapoNum == 0)//finger at 0, capo at 0
+            {
+                if (fretNum != 0)
+                {
+                    verticalDisplacement = Input.mousePosition.y - initialMousePosition.y;
+                    if (verticalDisplacement >= 5f || verticalDisplacement <= -5f)//increase to next note
+                    {
+                        /////OMGGGGGGGGGGG GENIUSSSSS
+                        startPitch = Mathf.Pow(2f, fretNum / 12f);
+                        endPitch = Mathf.Pow(2f, (fretNum + 2) / 12f);
+                        if (timer < duration)
+                        {
+                            // Calculate the new pitch based on the progress of the bend
+                            float t = timer / duration;
+                            currentPitch = Mathf.Lerp(startPitch, endPitch, t);
+
+                            // Set the pitch of the Audio Source to the new pitch
+                            guitarSoundManager.stringSound.pitch = currentPitch;
+
+                            // Increment the timer
+                            timer += Time.deltaTime;
+                        }
+                    }
+                }
+            }
+            else if (RetFretSpecificString(strNum, userFingerNum) > userCapoNum && RetFretSpecificString(strNum, userFingerNum) <= 23)//finger ahead capo
+            {
+                if (fretNum > RetFretSpecificString(strNum, userFingerNum))
+                {
+                    if (fretNum != 0)
+                    {
+                        verticalDisplacement = Input.mousePosition.y - initialMousePosition.y;
+                        if (verticalDisplacement >= 5f || verticalDisplacement <= -5f)//increase to next note
+                        {
+                            /////OMGGGGGGGGGGG GENIUSSSSS
+                            startPitch = Mathf.Pow(2f, fretNum / 12f);
+                            endPitch = Mathf.Pow(2f, (fretNum + 2) / 12f);
+                            if (timer < duration)
+                            {
+                                // Calculate the new pitch based on the progress of the bend
+                                float t = timer / duration;
+                                currentPitch = Mathf.Lerp(startPitch, endPitch, t);
+
+                                // Set the pitch of the Audio Source to the new pitch
+                                guitarSoundManager.stringSound.pitch = currentPitch;
+
+                                // Increment the timer
+                                timer += Time.deltaTime;
+                            }
+                        }
+                    }
+                }
+            }
+            else if (userCapoNum > RetFretSpecificString(strNum, userFingerNum))
+            {
+                if (fretNum > userCapoNum)
+                {
+                    verticalDisplacement = Input.mousePosition.y - initialMousePosition.y;
+                    if (verticalDisplacement >= 5f || verticalDisplacement <= -5f)//increase to next note
+                    {
+                        /////OMGGGGGGGGGGG GENIUSSSSS
+                        startPitch = Mathf.Pow(2f, fretNum / 12f);
+                        endPitch = Mathf.Pow(2f, (fretNum + 2) / 12f);
+                        if (timer < duration)
+                        {
+                            // Calculate the new pitch based on the progress of the bend
+                            float t = timer / duration;
+                            currentPitch = Mathf.Lerp(startPitch, endPitch, t);
+
+                            // Set the pitch of the Audio Source to the new pitch
+                            guitarSoundManager.stringSound.pitch = currentPitch;
+
+                            // Increment the timer
+                            timer += Time.deltaTime;
+                        }
+                    }
+                }
+            }
+        }
+        if (Input.GetMouseButton(0) && isDraggingVerticalStrum)
+        {
+                if (fretNum == 0)
+                {
+                    Ray multipleRaysStrum = Camera.main.ScreenPointToRay(Input.mousePosition);
+                    if (Physics.Raycast(multipleRaysStrum, out RaycastHit hitMultipleRays, layerMask))
+                    {
+                        Debug.DrawRay(multipleRaysStrum.origin, multipleRaysStrum.direction * hitMultipleRays.distance, Color.blue);
+                        if (hitMultipleRays.collider.CompareTag("String"))
+                        {
+                            Debug.DrawRay(multipleRaysStrum.origin, multipleRaysStrum.direction * hitMultipleRays.distance, Color.red);
+                            Debug.Log("Hit string during strum");
+                            GameObject stringClicked = hitMultipleRays.transform.gameObject;
+                            GuitarString guitarStringScript = stringClicked.GetComponent<GuitarString>();
+                            strNum = guitarStringScript.Return_String_Number();
+                            if (tempStr != strNum)
+                            {
+                                audioPlayed = false;
+                                if (!audioPlayed)
+                                {
+                                if (userCapoNum > RetFretSpecificString(strNum,userFingerNum))
+                                {
+                                    guitarSoundManager.PlayFretSound(userCapoNum, strNum);
+                                    audioPlayed = true;
+                                }
+                                else if (userCapoNum < RetFretSpecificString(strNum, userFingerNum))
+                                {
+                                    guitarSoundManager.PlayFretSound(RetFretSpecificString(strNum, userFingerNum), strNum);
+                                    audioPlayed = true;
+                                }
+                                else
+                                {
+                                    guitarSoundManager.PlayFretSound(fretNum, strNum);//play open sound
+                                    audioPlayed = true;
+                                }
+                                }
+                                tempStr = strNum;
+                            }
+                        }
+                    }
+                }
+        }
         if (Input.GetMouseButtonUp(0))
         {
             if (buttonScript.hammerIsPressed)
@@ -597,92 +691,16 @@ public class StringClickHandler : MonoBehaviour
                 //Debug.Log("Horizontal displacement: " + horizontalDisplacement);
             }
             isDraggingVerticalBend = false;
+            isDraggingVerticalStrum = false;
             isDraggingHorizontal = false;
             audioPlayed = false;
+            tempStr = 0;//0 is arbitrary, just to enable play once mouse click Up (0)
             //Restore to play sound again(due to bend)
             timer = 0;
             currentPitch = fretNum;
         }
-        if (buttonScript.strumIsPressed)
-        {
-            if (Input.GetMouseButtonDown(0))
-            {
-            Ray rayStrum = Camera.main.ScreenPointToRay(Input.mousePosition);
-                if (Physics.Raycast(rayStrum,out RaycastHit hitStrum))
-                {
-                    if (hitStrum.collider.CompareTag("Fret") || hitStrum.collider.CompareTag("String"))
-                    {
-                        sphereControllerScript.MoveSphereOverString(strNum, userFingerNum);//sphere act as finger press
-                        if (hitStrum.collider.CompareTag("Fret"))
-                        {
-                            GameObject fretClicked = hitStrum.transform.gameObject;
-                            FretNum fretNumScript = fretClicked.GetComponent<FretNum>();
-                            fretNum = fretNumScript.Return_Fret_Num();
-                            if (fretNum == 0)
-                            {
-                                isDraggingVerticalStrum = true;
-                                initialMousePosition = Input.mousePosition;
-                            }
-                                //code inside Input.GetMouseButton(0) && isDraggingVerticalStrum is implemented                         
-                        }
-                        else if (hitStrum.collider.CompareTag("String"))
-                        {
-                            GameObject stringClicked = hitStrum.transform.gameObject;
-                            int LayerIgnoreRaycast = LayerMask.NameToLayer("Ignore Raycast");
-                            stringClicked.layer = LayerIgnoreRaycast;
 
-                            Ray raySecondStrum = Camera.main.ScreenPointToRay(Input.mousePosition);
-                            RaycastHit hitStrumAgain;
-                            if (Physics.Raycast(raySecondStrum, out hitStrumAgain, layerMask))
-                            {
-                                if (hitStrumAgain.collider.CompareTag("Fret"))
-                                {
-                                    GameObject fretClicked = hitStrumAgain.transform.gameObject;
-                                    FretNum fretNumScript = fretClicked.GetComponent<FretNum>();
-                                    fretNum = fretNumScript.Return_Fret_Num();
-                                    if (fretNum == 0)
-                                    {
-                                        isDraggingVerticalStrum = true;
-                                        initialMousePosition = Input.mousePosition;
-                                    }
-                                    //code inside Input.GetMouseButton(0) && isDraggingVerticalStrum is implemented                         
-                                }
-                                //Restore layer of string gameobject
-                                int stringLayer = LayerMask.NameToLayer("String");
-                                stringClicked.layer = stringLayer;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        if (Input.GetMouseButton(0) && isDraggingVerticalStrum)
-        {
-            Ray multipleRaysStrum = Camera.main.ScreenPointToRay(Input.mousePosition);
-            if (Physics.Raycast(multipleRaysStrum, out RaycastHit hitMultipleRays, layerMask))
-            {
-                if (hitMultipleRays.collider.CompareTag("String"))
-                {
-                    Debug.Log(hitMultipleRays.collider.gameObject.name);
-                    Debug.DrawRay(multipleRaysStrum.origin, multipleRaysStrum.direction * hitMultipleRays.distance, Color.red);
-                    Debug.Log("Hit string during strum");
-                    GameObject stringClicked = hitMultipleRays.transform.gameObject;
-                    GuitarString guitarStringScript = stringClicked.GetComponent<GuitarString>();
-                    strNum = guitarStringScript.Return_String_Number();
-                    if (tempStr != strNum)
-                    {
-                    audioPlayed = false;
-                        if (!audioPlayed)
-                        {
-                        guitarSoundManager.PlayFretSound(RetFretSpecificString(strNum, userFingerNum), strNum);
-                        audioPlayed = true;
-                        }
-                        tempStr = strNum;
-                    }
-                }
-            }
-        }
-        //ensure that at every frame, fingers and kepo are at correct place
+        //Code to ensure that at every frame, fingers and kepo are at correct place
         capoControllerScript.MoveCapoOverFret(userCapoNum);
         for (int i = 0; i < 6; i++)
         {
@@ -691,6 +709,27 @@ public class StringClickHandler : MonoBehaviour
                 userFingerNum[i] = 0;
             }
             sphereControllerScript.MoveSphereOverString(i + 1, userFingerNum);
+        }
+
+        //Shortcut Keys
+        //S = Strum
+        if (Input.GetKeyDown(KeyCode.S))
+        {
+            for (int i = 1; i <= 6; i++)//play all 6 strings sounds, open or capo or finger press
+            {
+            if (userCapoNum > RetFretSpecificString(i, userFingerNum))
+            {
+                guitarSoundManager.PlayFretSound(userCapoNum, i);
+            }
+            else if (userCapoNum < RetFretSpecificString(i, userFingerNum))
+            {
+                guitarSoundManager.PlayFretSound(RetFretSpecificString(i, userFingerNum), i);
+            }
+            else
+            {
+                guitarSoundManager.PlayFretSound(0, i);//play open sound
+            }
+            }
         }
     }
     private void PlayGlowEffect(Vector3 givenMousePosition)
@@ -825,3 +864,21 @@ public class StringClickHandler : MonoBehaviour
     }
 }
  */
+            /* BEND APPROACH 1, SIMILAR TO SLIDE EFFECT
+            if ((verticalDisplacement >= 5f && verticalDisplacement < 25f) || (verticalDisplacement <= -5f && verticalDisplacement >= -25f))//increase to next note
+            {
+                if (!audioPlayed)
+                {
+                    guitarSoundManager.PlayFretSound(fretNum + 1, strNum);
+                    audioPlayed = true;
+                }
+            }
+            if ((verticalDisplacement >= 25f) || (verticalDisplacement <= -25f))//increase to next note
+            {
+                if (!audioPlayed)
+                {
+                    guitarSoundManager.PlayFretSound(fretNum + 2, strNum);
+                    audioPlayed = true;
+                }
+            }
+            */
