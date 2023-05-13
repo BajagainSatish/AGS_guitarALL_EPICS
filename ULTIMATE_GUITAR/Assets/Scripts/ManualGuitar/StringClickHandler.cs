@@ -239,14 +239,38 @@ public class StringClickHandler : MonoBehaviour
                         //Bend String Code Implementation
                         if (buttonScript.bendIsPressed)
                         {
-                            if (fretNum > RetFretSpecificString(strNum, userFingerNum))
+                            if (RetFretSpecificString(strNum, userFingerNum) == 0 && userCapoNum == 0)//finger at 0, capo at 0
                             {
-                                //better approach, actual bend
-                                isDraggingVerticalBend = true;
-                                initialMousePosition = Input.mousePosition;
-                                PlayGlowEffect(hitAgain.point);//particle effect
-                                guitarSoundManager.PlayFretSound(fretNum, strNum);//played just once here
-                                                                                  //now code inside if(Input.getmousebutton(0) && isDraggingVerticalBend is executed
+                                if (fretNum != 0)
+                                {
+                                    isDraggingVerticalBend = true;
+                                    initialMousePosition = Input.mousePosition;
+                                    PlayGlowEffect(hitAgain.point);//particle effect
+                                    guitarSoundManager.PlayFretSound(fretNum, strNum);
+                                }
+                            }
+                            else if (RetFretSpecificString(strNum, userFingerNum) > userCapoNum && RetFretSpecificString(strNum, userFingerNum) <= 23)//finger ahead capo
+                            {
+                                if (fretNum > RetFretSpecificString(strNum, userFingerNum))
+                                {
+                                    if (fretNum != 0)
+                                    {
+                                        isDraggingVerticalBend = true;
+                                        initialMousePosition = Input.mousePosition;
+                                        PlayGlowEffect(hitAgain.point);//particle effect
+                                        guitarSoundManager.PlayFretSound(fretNum, strNum);
+                                    }
+                                }
+                            }
+                            else if (userCapoNum > RetFretSpecificString(strNum, userFingerNum))
+                            {
+                                if (fretNum > userCapoNum)
+                                {
+                                    isDraggingVerticalBend = true;
+                                    initialMousePosition = Input.mousePosition;
+                                    PlayGlowEffect(hitAgain.point);//particle effect
+                                    guitarSoundManager.PlayFretSound(fretNum, strNum);
+                                }
                             }
                         }
                         //code verticalDisplacement = Input.mousePosition.y - inputPosition.y inside another if block
@@ -265,11 +289,6 @@ public class StringClickHandler : MonoBehaviour
                 }
             }
         }
-        if (Input.GetMouseButton(0) && isDraggingVerticalBend)
-        {
-            if (fretNum > RetFretSpecificString(strNum, userFingerNum))
-            {
-            verticalDisplacement = Input.mousePosition.y - initialMousePosition.y;
             /* BEND APPROACH 1, SIMILAR TO SLIDE EFFECT
             if ((verticalDisplacement >= 5f && verticalDisplacement < 25f) || (verticalDisplacement <= -5f && verticalDisplacement >= -25f))//increase to next note
             {
@@ -288,30 +307,91 @@ public class StringClickHandler : MonoBehaviour
                 }
             }
             */
-            //APPROACH 2
-            if (verticalDisplacement >= 5f || verticalDisplacement <= -5f)//increase to next note
+            //BEND APPROACH 2
+        if (Input.GetMouseButton(0) && isDraggingVerticalBend)
+        {
+            if (RetFretSpecificString(strNum, userFingerNum) == 0 && userCapoNum == 0)//finger at 0, capo at 0
             {
-                /////OMGGGGGGGGGGG GENIUSSSSS
-                startPitch = Mathf.Pow(2f, fretNum / 12f);
-                endPitch = Mathf.Pow(2f, (fretNum+2) / 12f);
-                if (timer < duration)
+                if (fretNum != 0)
                 {
-                    // Calculate the new pitch based on the progress of the bend
-                    float t = timer / duration;
-                    currentPitch = Mathf.Lerp(startPitch, endPitch, t);
+                    verticalDisplacement = Input.mousePosition.y - initialMousePosition.y;
+                    if (verticalDisplacement >= 5f || verticalDisplacement <= -5f)//increase to next note
+                    {
+                        /////OMGGGGGGGGGGG GENIUSSSSS
+                        startPitch = Mathf.Pow(2f, fretNum / 12f);
+                        endPitch = Mathf.Pow(2f, (fretNum + 2) / 12f);
+                        if (timer < duration)
+                        {
+                            // Calculate the new pitch based on the progress of the bend
+                            float t = timer / duration;
+                            currentPitch = Mathf.Lerp(startPitch, endPitch, t);
 
-                    // Set the pitch of the Audio Source to the new pitch
-                    guitarSoundManager.stringSound.pitch = currentPitch;
+                            // Set the pitch of the Audio Source to the new pitch
+                            guitarSoundManager.stringSound.pitch = currentPitch;
 
-                    // Increment the timer
-                    timer += Time.deltaTime;
+                            // Increment the timer
+                            timer += Time.deltaTime;
+                        }
+                    }
                 }
             }
+            else if (RetFretSpecificString(strNum, userFingerNum) > userCapoNum && RetFretSpecificString(strNum, userFingerNum) <= 23)//finger ahead capo
+            {
+                if (fretNum > RetFretSpecificString(strNum, userFingerNum))
+                {
+                    if (fretNum != 0)
+                    {
+                        verticalDisplacement = Input.mousePosition.y - initialMousePosition.y;
+                        if (verticalDisplacement >= 5f || verticalDisplacement <= -5f)//increase to next note
+                        {
+                            /////OMGGGGGGGGGGG GENIUSSSSS
+                            startPitch = Mathf.Pow(2f, fretNum / 12f);
+                            endPitch = Mathf.Pow(2f, (fretNum + 2) / 12f);
+                            if (timer < duration)
+                            {
+                                // Calculate the new pitch based on the progress of the bend
+                                float t = timer / duration;
+                                currentPitch = Mathf.Lerp(startPitch, endPitch, t);
+
+                                // Set the pitch of the Audio Source to the new pitch
+                                guitarSoundManager.stringSound.pitch = currentPitch;
+
+                                // Increment the timer
+                                timer += Time.deltaTime;
+                            }
+                        }
+                    }
+                }
+            }
+            else if (userCapoNum > RetFretSpecificString(strNum, userFingerNum))
+            {
+                if (fretNum > userCapoNum)
+                {
+                    verticalDisplacement = Input.mousePosition.y - initialMousePosition.y;
+                    if (verticalDisplacement >= 5f || verticalDisplacement <= -5f)//increase to next note
+                    {
+                        /////OMGGGGGGGGGGG GENIUSSSSS
+                        startPitch = Mathf.Pow(2f, fretNum / 12f);
+                        endPitch = Mathf.Pow(2f, (fretNum + 2) / 12f);
+                        if (timer < duration)
+                        {
+                            // Calculate the new pitch based on the progress of the bend
+                            float t = timer / duration;
+                            currentPitch = Mathf.Lerp(startPitch, endPitch, t);
+
+                            // Set the pitch of the Audio Source to the new pitch
+                            guitarSoundManager.stringSound.pitch = currentPitch;
+
+                            // Increment the timer
+                            timer += Time.deltaTime;
+                        }
+                    }
+                }
             }
         }
         if (Input.GetMouseButton(0) && isDraggingHorizontal)
         {
-            if (fretNum > RetFretSpecificString(strNum, userFingerNum))
+            if (fretNum > RetFretSpecificString(strNum, userFingerNum))//kinda sus but still works
             {
             horizontalDisplacement = initialMousePosition.x - Input.mousePosition.x;
             if (horizontalDisplacement >= 10f || horizontalDisplacement <= -10f)
@@ -327,7 +407,6 @@ public class StringClickHandler : MonoBehaviour
                     guitarSoundManager.PlayFretSound(fretNum, strNum);
                     audioPlayed = true;
                 }
-
                 Ray multipleRays = Camera.main.ScreenPointToRay(Input.mousePosition);
                 if (Physics.Raycast(multipleRays, out RaycastHit hitMultipleRays, layerMask))
                 {
@@ -416,7 +495,6 @@ public class StringClickHandler : MonoBehaviour
                                 //Debug.Log("Updated layer of string:" + stringClicked.layer);
                             }
                         }
-
                         audioPlayed = false;
                         if (!audioPlayed)
                         {
@@ -451,7 +529,6 @@ public class StringClickHandler : MonoBehaviour
                         tempFret = fretNum;
                     }
                 }
-
             }
             }
         }
@@ -609,6 +686,10 @@ public class StringClickHandler : MonoBehaviour
         capoControllerScript.MoveCapoOverFret(userCapoNum);
         for (int i = 0; i < 6; i++)
         {
+            if (userCapoNum >= userFingerNum[i])//ensure that finger is not at capo position or behind capo
+            {
+                userFingerNum[i] = 0;
+            }
             sphereControllerScript.MoveSphereOverString(i + 1, userFingerNum);
         }
     }
