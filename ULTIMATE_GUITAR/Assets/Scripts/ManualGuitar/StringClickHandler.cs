@@ -9,18 +9,8 @@ public class StringClickHandler : MonoBehaviour
 {
     public GuitarSoundManager guitarSoundManager;
     public ButtonScript buttonScript;
-    private SphereController sphereControllerScript;
     public CapoController capoControllerScript;
-
-    private Vector3 initialMousePosition;
-    private bool isDraggingVerticalBend = false;
-    private bool isDraggingHorizontal = false;
-    private bool isDraggingVerticalStrum = false;
-    private float verticalDisplacement, horizontalDisplacement;
-    private float tempFret;
-    private float tempStr;
-    private int fretNum;
-    private int strNum;
+    private SphereController sphereControllerScript;
 
     public TMP_InputField userInputFingerElow;
     public TMP_InputField userInputFingerA;
@@ -28,23 +18,33 @@ public class StringClickHandler : MonoBehaviour
     public TMP_InputField userInputFingerG;
     public TMP_InputField userInputFingerB;
     public TMP_InputField userInputFingerEhigh;
-
     public TMP_InputField userInputCapo;
+
+    [SerializeField] private ParticleSystem glowEffect;
+    [SerializeField] private LayerMask layerMask;
+
+    private Vector3 initialMousePosition;
+    private bool isDraggingVerticalBend = false;
+    private bool isDraggingHorizontal = false;
+    private bool isDraggingVerticalStrum = false;
+    private bool isPressingHammer = false;
+    private bool isPressingPullOff = false;
+    private float verticalDisplacement, horizontalDisplacement;
+    private float tempFret;
+    private float tempStr;
+    private int fretNum;
+    private int strNum;
 
     private int userCapoNum;
     private int[] userFingerNum;//finger press purpose
 
-    [SerializeField] private ParticleSystem glowEffect;
-
+    readonly private float duration = 1f; // Duration of the bend in seconds, arbitrary value
     private float startPitch;
     private float endPitch;
-    public float duration = 1f; // Duration of the bend in seconds, arbitrary value
     private float currentPitch; // Current pitch during the bend
     private float timer; // Timer to keep track of the progress of the bend
 
     private bool audioPlayed = false;
-
-    [SerializeField] private LayerMask layerMask;
 
     private void Start()
     {
@@ -92,7 +92,7 @@ public class StringClickHandler : MonoBehaviour
                             FretNum fretNumScript = fretClicked.GetComponent<FretNum>();
                             fretNum = fretNumScript.Return_Fret_Num();
                             //Debug.Log("Fret " + fretNum);
-
+                        }
                             //None is pressed, with fret num input
                             if (buttonScript.noneIsPressed)
                             {
@@ -134,6 +134,7 @@ public class StringClickHandler : MonoBehaviour
                             //Hammer logic = play open/finger press sound, then pressed sound on fret
                             if (buttonScript.hammerIsPressed)
                             {
+                                isPressingHammer = true;
                                 if (RetFretSpecificString(strNum, userFingerNum) == 0 && userCapoNum == 0)//finger at 0, capo at 0
                                 {
                                     if (fretNum != 0)
@@ -166,6 +167,7 @@ public class StringClickHandler : MonoBehaviour
                             //PUll off logic = play pressed fret sound, then open/finger press
                             if (buttonScript.pullOffIsPressed)
                             {
+                                isPressingPullOff = true;
                                 if (RetFretSpecificString(strNum, userFingerNum) == 0 && userCapoNum == 0)//finger at 0, capo at 0
                                 {
                                     if (fretNum != 0)
@@ -196,7 +198,6 @@ public class StringClickHandler : MonoBehaviour
                                 }
                                 //Now the code inside if (Input.GetMouseButtonUp(0)) will also be executed
                             }
-                        }
                         // END Hammer and Pull Off Code Implementation
 
                         //Sliding Code Implementation
@@ -209,6 +210,7 @@ public class StringClickHandler : MonoBehaviour
                                     tempFret = fretNum;
                                     isDraggingHorizontal = true;
                                     initialMousePosition = Input.mousePosition;
+                                    guitarSoundManager.PlayFretSound(fretNum, strNum);
                                 }
                             }
                             else if (RetFretSpecificString(strNum, userFingerNum) > userCapoNum && RetFretSpecificString(strNum, userFingerNum) <= 23)//finger ahead capo
@@ -220,6 +222,7 @@ public class StringClickHandler : MonoBehaviour
                                         tempFret = fretNum;
                                         isDraggingHorizontal = true;
                                         initialMousePosition = Input.mousePosition;
+                                        guitarSoundManager.PlayFretSound(fretNum, strNum);
                                     }
                                 }
                             }
@@ -230,6 +233,7 @@ public class StringClickHandler : MonoBehaviour
                                     tempFret = fretNum;
                                     isDraggingHorizontal = true;
                                     initialMousePosition = Input.mousePosition;
+                                    guitarSoundManager.PlayFretSound(fretNum, strNum);
                                 }
                             }
                                 //code inside Input.GetMouseButton(0) && isDraggingHorizontal is implemented
@@ -279,7 +283,7 @@ public class StringClickHandler : MonoBehaviour
 
                     //Restore layer of string gameobject
                     int stringLayer = LayerMask.NameToLayer("String");
-                    stringClicked.gameObject.layer = stringLayer;
+                    stringClicked.layer = stringLayer;
                     //Debug.Log("Updated layer of string:" + stringClicked.layer);
                 }
                 else
@@ -362,22 +366,11 @@ public class StringClickHandler : MonoBehaviour
         }
         if (Input.GetMouseButton(0) && isDraggingHorizontal)
         {
-            if (fretNum > RetFretSpecificString(strNum, userFingerNum))//kinda sus but still works
+            if ((RetFretSpecificString(strNum, userFingerNum) == 0 && userCapoNum == 0) || (RetFretSpecificString(strNum, userFingerNum) > userCapoNum && RetFretSpecificString(strNum, userFingerNum) <= 23) || (userCapoNum > RetFretSpecificString(strNum, userFingerNum)))
             {
             horizontalDisplacement = initialMousePosition.x - Input.mousePosition.x;
             if (horizontalDisplacement >= 10f || horizontalDisplacement <= -10f)
             {
-                if (!audioPlayed)
-                {
-                    Ray raySlide = Camera.main.ScreenPointToRay(Input.mousePosition);
-                        RaycastHit rayCastHitSlide;
-                        if (Physics.Raycast(raySlide,out rayCastHitSlide))
-                        {
-                            PlayGlowEffect(rayCastHitSlide.point);//particle effect
-                        }
-                    guitarSoundManager.PlayFretSound(fretNum, strNum);
-                    audioPlayed = true;
-                }
                 Ray multipleRays = Camera.main.ScreenPointToRay(Input.mousePosition);
                 if (Physics.Raycast(multipleRays, out RaycastHit hitMultipleRays, layerMask))
                 {
@@ -627,8 +620,8 @@ public class StringClickHandler : MonoBehaviour
                 }
         }
         if (Input.GetMouseButtonUp(0))
-        {
-            if (buttonScript.hammerIsPressed)
+        {//bug found here, here no check whether click on string, fret is made or not, just click on button produced sound
+            if (buttonScript.hammerIsPressed && isPressingHammer)
             {
                 if (RetFretSpecificString(strNum, userFingerNum) == 0 && userCapoNum == 0)//finger at 0, capo at 0
                 {
@@ -655,7 +648,7 @@ public class StringClickHandler : MonoBehaviour
                     }
                 }
             }
-            if (buttonScript.pullOffIsPressed)
+            if (buttonScript.pullOffIsPressed && isPressingPullOff)
             {
                 if (RetFretSpecificString(strNum, userFingerNum) == 0 && userCapoNum == 0)//finger at 0, capo at 0
                 {
@@ -693,6 +686,8 @@ public class StringClickHandler : MonoBehaviour
             isDraggingVerticalBend = false;
             isDraggingVerticalStrum = false;
             isDraggingHorizontal = false;
+            isPressingHammer = false;
+            isPressingPullOff = false;
             audioPlayed = false;
             tempStr = 0;//0 is arbitrary, just to enable play once mouse click Up (0)
             //Restore to play sound again(due to bend)
@@ -796,7 +791,42 @@ public class StringClickHandler : MonoBehaviour
     {
         userCapoNum = int.Parse(userInputCapo.text);
     }
-
+    public void ChordG()
+    {
+        userFingerNum[0] = 3 + userCapoNum;
+        userFingerNum[1] = 2 + userCapoNum;
+        userFingerNum[2] = 0 + userCapoNum;
+        userFingerNum[3] = 0 + userCapoNum;
+        userFingerNum[4] = 3 + userCapoNum;
+        userFingerNum[5] = 3 + userCapoNum;
+    }
+    public void ChordF()
+    {
+        userFingerNum[0] = 1 + userCapoNum;
+        userFingerNum[1] = 3 + userCapoNum;
+        userFingerNum[2] = 3 + userCapoNum;
+        userFingerNum[3] = 2 + userCapoNum;
+        userFingerNum[4] = 1 + userCapoNum;
+        userFingerNum[5] = 1 + userCapoNum;
+    }
+    public void ChordC()
+    {
+        userFingerNum[0] = 0 + userCapoNum;
+        userFingerNum[1] = 3 + userCapoNum;
+        userFingerNum[2] = 2 + userCapoNum;
+        userFingerNum[3] = 0 + userCapoNum;
+        userFingerNum[4] = 1 + userCapoNum;
+        userFingerNum[5] = 0 + userCapoNum;
+    }
+    public void ChordD()
+    {
+        userFingerNum[0] = 0 + userCapoNum;
+        userFingerNum[1] = 0 + userCapoNum;
+        userFingerNum[2] = 0 + userCapoNum;
+        userFingerNum[3] = 2 + userCapoNum;
+        userFingerNum[4] = 3 + userCapoNum;
+        userFingerNum[5] = 2 + userCapoNum;
+    }
 }
 
 /*
