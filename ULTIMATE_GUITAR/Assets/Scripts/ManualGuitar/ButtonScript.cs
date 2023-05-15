@@ -14,6 +14,8 @@ public class ButtonScript : MonoBehaviour
     public string currentMode;
 
     public GameObject startButton;
+    public GameObject stopButton;
+    public GuitarSoundManager guitarSoundManagerScript;
 
     private void Start()
     {
@@ -25,6 +27,7 @@ public class ButtonScript : MonoBehaviour
         strumIsPressed = false;
         currentMode = "None";
         isRecordingPressed = false;
+        stopButton.SetActive(false);
     }
 
     public void OnClickNone()
@@ -94,10 +97,16 @@ public class ButtonScript : MonoBehaviour
     {
         isRecordingPressed = true;
         startButton.GetComponent<Image>().color = Color.red;
+        stopButton.SetActive(true);
+        guitarSoundManagerScript.storeData.Clear();
     }
     public void OnClickStopRecord()
     {
-        isRecordingPressed = false;
         startButton.GetComponent<Image>().color = Color.white;
+        isRecordingPressed = false;
+        stopButton.SetActive(false);
+        JsonCompare.DisplayNotes();
+        guitarSoundManagerScript.similarityOutputText.text = "Note Similarity: " + JsonCompare.similarityNote + " %, Mode Similarity: " + JsonCompare.similarityMode + "%.";
+        guitarSoundManagerScript.similarityOutputText.gameObject.SetActive(true);
     }
 }

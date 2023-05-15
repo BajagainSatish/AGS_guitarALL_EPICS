@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 using System.IO;
+using TMPro;
 
 public class GuitarSoundManager : MonoBehaviour
 {
@@ -25,7 +26,9 @@ public class GuitarSoundManager : MonoBehaviour
     private int sampleSize;//4096
     private float[] _audioData;
 
-    List<StorePlayedNote> storeData = new List<StorePlayedNote>();
+    public List<StorePlayedNote> storeData = new List<StorePlayedNote>();
+
+    public TextMeshProUGUI similarityOutputText;
 
     private void Start()
     {
@@ -43,7 +46,7 @@ public class GuitarSoundManager : MonoBehaviour
         _audioData = new float[sampleSize];
 
         //storeData = FileHandler.ReadFromJSON<StorePlayedNote>(fileName);//verify if reading works, allows to append new values to previous values
-        JsonCompare.DisplayNotes();
+        similarityOutputText.gameObject.SetActive(false);
     }
 
     public void PlayFretSound(int fretNum, int strNum)

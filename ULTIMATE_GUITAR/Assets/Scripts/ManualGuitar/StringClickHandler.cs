@@ -710,6 +710,7 @@ public class StringClickHandler : MonoBehaviour
         //S = Strum
         if (Input.GetKeyDown(KeyCode.S))
         {
+            buttonScript.OnClickStrum();
             for (int i = 1; i <= 6; i++)//play all 6 strings sounds, open or capo or finger press
             {
             if (userCapoNum > RetFretSpecificString(i, userFingerNum))
