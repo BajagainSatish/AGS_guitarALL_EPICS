@@ -78,8 +78,8 @@ public class AudioAnalyzer : MonoBehaviour
         float closestNote = GetClosestNoteFrequency(fundamentalFrequency);
         string note_letter = GetNoteLetter(closestNote);
 
-        //Debug.Log("Fundamental Frequency: " + fundamentalFrequency);
-        //Debug.Log("Closest Note: " + closestNote);
+        Debug.Log("Fundamental Frequency: " + fundamentalFrequency);
+        Debug.Log("Closest Note: " + closestNote);
         Debug.Log("Note Letter: " + note_letter);
 
         return note_letter;
@@ -106,7 +106,7 @@ public class AudioAnalyzer : MonoBehaviour
     }
 
     float[] MaxAbsoluteScaling(float[] data)
-    {//error possible here
+    {
         float xMax = Mathf.Abs(data.Max());
         return data.Select(x => x / xMax).ToArray();
     }
@@ -155,32 +155,34 @@ public class AudioAnalyzer : MonoBehaviour
     }
 
     float GetClosestNoteFrequency(float frequency)//work on this later, maybe frequency just greater than this frequency rather than closest note
-    {
+    {//Out of 24 * 6 notes, these 3 notes at extremely high frequency are exception as per our work logic of finding closest note. Here, for fret 21 and 22, unlike 19 here we chopped off all values after decimal to compare
         if (frequency == 958.6957f)
         {
             return 987.77f;//B fret 19
         }
-        if (frequency == 1075.61f)
+        else if ((int)frequency == 1075)
         {
             return 1108.73f;//C# fret 21
         }
-        if (frequency == 1130.769f)
+        else if ((int)frequency == 1130)
         {
             return 1174.66f;//D fret 22
         }
-        float smallestDifference = float.MaxValue;
-        float closestNote = float.MaxValue;
-        for (int i = 0; i < notes.Length; i++)
-        {
-            float difference = Mathf.Abs(frequency - (float)notes[i]);
-
-            if (difference < smallestDifference)
+        else {
+            float smallestDifference = float.MaxValue;
+            float closestNote = float.MaxValue;
+            for (int i = 0; i < notes.Length; i++)
             {
-                smallestDifference = difference;
-                closestNote = (float)notes[i];
+                float difference = Mathf.Abs(frequency - (float)notes[i]);
+
+                if (difference < smallestDifference)
+                {
+                    smallestDifference = difference;
+                    closestNote = (float)notes[i];
+                }
             }
+            return closestNote;
         }
-        return closestNote;
     }
     string GetNoteLetter(float frequency)
     {

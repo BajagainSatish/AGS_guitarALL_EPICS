@@ -106,7 +106,14 @@ public class ButtonScript : MonoBehaviour
         isRecordingPressed = false;
         stopButton.SetActive(false);
         JsonCompare.DisplayNotes();
-        guitarSoundManagerScript.similarityOutputText.text = "Note Similarity: " + JsonCompare.similarityNote + " %, Mode Similarity: " + JsonCompare.similarityMode + "%.";
+        if (JsonCompare.similarityNote > 35)
+        {
+        guitarSoundManagerScript.similarityOutputText.text = "Note Similarity: " + Mathf.Round((float)JsonCompare.similarityNote) + " %, Mode Similarity: " + Mathf.Round((float)JsonCompare.similarityMode) + "%.";
+        }
+        else
+        {
+            guitarSoundManagerScript.similarityOutputText.text = "Difference in either scale or duration of music. Please Try again.";
+        }
         guitarSoundManagerScript.similarityOutputText.gameObject.SetActive(true);
     }
 }

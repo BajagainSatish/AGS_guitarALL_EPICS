@@ -160,7 +160,25 @@ public static class JsonCompare
 
         similarityNote = ((double)noteMatch / (double)jsonDataOriginal.Length) * 100;//We're taking string 1 as reference.
         similarityMode = ((double)modeMatch / (double)jsonDataOriginal.Length) * 100;
-        Debug.Log("Note Similarity: " + similarityNote + " Mode Similarity: " + similarityMode);
+
+        float upperRange = jsonDataOriginal.Length + jsonDataOriginal.Length / 2f;
+        float lowerRange = jsonDataOriginal.Length - jsonDataOriginal.Length / 2f;
+
+        if (jsonDataUser.Length > lowerRange && jsonDataUser.Length < upperRange)//25% to 75%
+        {
+            if (jsonDataUser.Length != jsonDataOriginal.Length)
+            {
+                similarityNote -= 5.75f;//not so good logic for now, think later
+            }
+            Debug.Log("Note Similarity: " + similarityNote + " Mode Similarity: " + similarityMode);
+            
+        }
+        else
+        {
+            similarityNote = 0;
+            Debug.Log("Note Similarity: " + similarityNote + " Mode Similarity: " + similarityMode);
+        }
+
     }
 
     private static int NeedlemanWunsch(string s1, string s2)
