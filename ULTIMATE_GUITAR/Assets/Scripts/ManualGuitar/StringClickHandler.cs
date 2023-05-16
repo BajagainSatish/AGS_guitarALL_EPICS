@@ -584,11 +584,11 @@ public class StringClickHandler : MonoBehaviour
                     Ray multipleRaysStrum = Camera.main.ScreenPointToRay(Input.mousePosition);
                     if (Physics.Raycast(multipleRaysStrum, out RaycastHit hitMultipleRays, layerMask))
                     {
-                        Debug.DrawRay(multipleRaysStrum.origin, multipleRaysStrum.direction * hitMultipleRays.distance, Color.blue);
+                        //Debug.DrawRay(multipleRaysStrum.origin, multipleRaysStrum.direction * hitMultipleRays.distance, Color.blue);
                         if (hitMultipleRays.collider.CompareTag("String"))
                         {
-                            Debug.DrawRay(multipleRaysStrum.origin, multipleRaysStrum.direction * hitMultipleRays.distance, Color.red);
-                            Debug.Log("Hit string during strum");
+                            //Debug.DrawRay(multipleRaysStrum.origin, multipleRaysStrum.direction * hitMultipleRays.distance, Color.red);
+                            //Debug.Log("Hit string during strum");
                             GameObject stringClicked = hitMultipleRays.transform.gameObject;
                             GuitarString guitarStringScript = stringClicked.GetComponent<GuitarString>();
                             strNum = guitarStringScript.Return_String_Number();

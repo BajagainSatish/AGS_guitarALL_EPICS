@@ -16,7 +16,7 @@ public class ButtonScript : MonoBehaviour
     public GameObject startButton;
     public GameObject stopButton;
     public GuitarSoundManager guitarSoundManagerScript;
-
+    private AudioSource preRecordTwinkle;
     private void Start()
     {
         noneIsPressed = true;
@@ -28,6 +28,7 @@ public class ButtonScript : MonoBehaviour
         currentMode = "None";
         isRecordingPressed = false;
         stopButton.SetActive(false);
+        preRecordTwinkle = GetComponent<AudioSource>();
     }
 
     public void OnClickNone()
@@ -115,5 +116,9 @@ public class ButtonScript : MonoBehaviour
             guitarSoundManagerScript.similarityOutputText.text = "Difference in either scale or duration of music. Please Try again.";
         }
         guitarSoundManagerScript.similarityOutputText.gameObject.SetActive(true);
+    }
+    public void OnClickPlayTwinkleRec()
+    {
+        preRecordTwinkle.Play();
     }
 }

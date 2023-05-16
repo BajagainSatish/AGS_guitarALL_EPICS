@@ -8,7 +8,7 @@ using System.Security.Cryptography;
 public static class JsonCompare
 {
     // Specify the path to your JSON file
-    private static readonly string filePathOriginal = @"C:\Users\Administrator\AppData\LocalLow\DefaultCompany\ULTIMATE_GUITAR\TestReference.json";
+    private static readonly string filePathOriginal = @"C:\Users\Administrator\AppData\LocalLow\DefaultCompany\ULTIMATE_GUITAR\Twinkle.json";
     private static readonly string filePathUser = @"C:\Users\Administrator\AppData\LocalLow\DefaultCompany\ULTIMATE_GUITAR\UserPlay.json";
 
     // Read the contents of the JSON file into a string
@@ -52,7 +52,7 @@ public static class JsonCompare
         jsonStringUser = File.ReadAllText(filePathUser);
 
         //Debug.Log("jsonStringOriginal: " + jsonStringOriginal);//works
-        Debug.Log("jsonStringUser: " + jsonStringUser);
+        //Debug.Log("jsonStringUser: " + jsonStringUser);
 
         // Parse the JSON strings into arrays of StorePlayedNote objects
         notes1 = JsonHelper.FromJson<StorePlayedNote>(jsonStringOriginal);
@@ -60,7 +60,7 @@ public static class JsonCompare
 
         // Compare the arrays for similarity
         bool areSimilar = CompareNotes(notes1, notes2);
-        Debug.Log("The JSON files are " + (areSimilar ? "similar" : "different"));
+        //Debug.Log("The JSON files are " + (areSimilar ? "similar" : "different"));
 
         JsonConverterToCharacter(notes1,notes2);
     }

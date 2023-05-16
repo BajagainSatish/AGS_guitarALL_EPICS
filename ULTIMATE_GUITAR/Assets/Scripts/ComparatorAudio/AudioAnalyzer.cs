@@ -78,8 +78,8 @@ public class AudioAnalyzer : MonoBehaviour
         float closestNote = GetClosestNoteFrequency(fundamentalFrequency);
         string note_letter = GetNoteLetter(closestNote);
 
-        Debug.Log("Fundamental Frequency: " + fundamentalFrequency);
-        Debug.Log("Closest Note: " + closestNote);
+        //Debug.Log("Fundamental Frequency: " + fundamentalFrequency);
+        //Debug.Log("Closest Note: " + closestNote);
         Debug.Log("Note Letter: " + note_letter);
 
         return note_letter;
