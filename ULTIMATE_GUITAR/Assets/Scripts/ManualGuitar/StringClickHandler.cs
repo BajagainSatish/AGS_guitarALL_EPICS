@@ -329,15 +329,15 @@ public class StringClickHandler : MonoBehaviour
                                     PlayGlowEffect(hitAgain.point);
                                     if (userCapoNum > RetFretSpecificString(strNum,userFingerNum))
                                     {
-                                        guitarSoundManager.PlayFretSound(userCapoNum,strNum);
+                                        //guitarSoundManager.PlayFretSound(userCapoNum,strNum);
                                     }
                                     else if (userCapoNum < RetFretSpecificString(strNum,userFingerNum))
                                     {
-                                        guitarSoundManager.PlayFretSound(RetFretSpecificString(strNum, userFingerNum),strNum);
+                                        //guitarSoundManager.PlayFretSound(RetFretSpecificString(strNum, userFingerNum),strNum);
                                     }
                                     else
                                     {
-                                        guitarSoundManager.PlayFretSound(0,strNum);
+                                        //guitarSoundManager.PlayFretSound(0,strNum);
                                     }
                                 }
                             }
