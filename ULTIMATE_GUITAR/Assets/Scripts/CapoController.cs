@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using TMPro;
 public class CapoController : MonoBehaviour
 {
     public GameObject capo;
@@ -66,22 +66,36 @@ public class CapoController : MonoBehaviour
 {16f,-90f}
     };
 
+    public TextMeshProUGUI errorDisplayText;
+
     void Start()
     {
         capo.transform.position = new Vector3(capoPosX[0], 0.1081f, capoPosZ[0]);
+        errorDisplayText.gameObject.SetActive(false);
     }
 
     public void MoveCapoOverFret(int fretNumber)
     {
         if (fretNumber == 0)
         {
+            errorDisplayText.gameObject.SetActive(false);
             capo.transform.position = new Vector3(capoPosX[0], 0.1081f, capoPosZ[fretNumber]);
         }
         else if (fretNumber >=1 && fretNumber <= 16)
         {
+            errorDisplayText.gameObject.SetActive(false);
             capo.transform.position = new Vector3(capoPosX[fretNumber], 0.0226f, capoPosZ[fretNumber]);
         }
+        else
+        {
+            errorDisplayText.gameObject.SetActive(true);
+        }
+        //no need of else code here, because it will be filtered in Update of StringClickHandler itself, and this function is called only if userCapoNum >=0 && <= 16
+        //however we're doing this for sake of Unit Tests
+        if (fretNumber >=0 && fretNumber <= 16)
+        {
         Vector3 rotationVector = new Vector3(0f, capoRotY[fretNumber],90f);
         capo.transform.rotation = Quaternion.Euler(rotationVector);
+        }
     }
 }

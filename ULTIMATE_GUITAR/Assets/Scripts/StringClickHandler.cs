@@ -19,6 +19,7 @@ public class StringClickHandler : MonoBehaviour
     public TMP_InputField userInputFingerB;
     public TMP_InputField userInputFingerEhigh;
     public TMP_InputField userInputCapo;
+    public TextMeshProUGUI fingerWrtCapoError;
 
     [SerializeField] private ParticleSystem glowEffect;
     [SerializeField] private LayerMask layerMask;
@@ -51,6 +52,7 @@ public class StringClickHandler : MonoBehaviour
         sphereControllerScript = GetComponent<SphereController>();
         userFingerNum = new int[]{0,0,0,0,0,0};
         userCapoNum = 0;
+        fingerWrtCapoError.gameObject.SetActive(false);
     }
 
     private void Update()
@@ -696,14 +698,33 @@ public class StringClickHandler : MonoBehaviour
         }
 
         //Code to ensure that at every frame, fingers and kepo are at correct place
-        capoControllerScript.MoveCapoOverFret(userCapoNum);
+        if (userCapoNum >=0 && userCapoNum <= 16)
+        {
+            capoControllerScript.MoveCapoOverFret(userCapoNum);
+            capoControllerScript.errorDisplayText.gameObject.SetActive(false);
+        }
+        else
+        {
+            capoControllerScript.errorDisplayText.gameObject.SetActive(true);
+        }
+
         for (int i = 0; i < 6; i++)
         {
-            if (userCapoNum >= userFingerNum[i])//ensure that finger is not at capo position or behind capo
+            if (userFingerNum[i] >= 0 && userFingerNum[i] <= 23)
             {
-                userFingerNum[i] = 0;
+                if (userCapoNum > 0 && userCapoNum <= 16)
+                {
+                    if (userCapoNum > userFingerNum[i])//ensure that finger is not at capo position or behind capo
+                    {
+                        userFingerNum[i] = 0;
+                    }
+                }
+                sphereControllerScript.MoveSphereOverString(i + 1, userFingerNum);
             }
-            sphereControllerScript.MoveSphereOverString(i + 1, userFingerNum);
+            else
+            {
+                capoControllerScript.errorDisplayText.gameObject.SetActive(true);//will be active even if atleast one finger input is wrong
+            }
         }
 
         //Shortcut Keys
@@ -767,26 +788,74 @@ public class StringClickHandler : MonoBehaviour
     public void FingerNumInputElow()
     {
         userFingerNum[0] = int.Parse(userInputFingerElow.text);
+        if (userFingerNum[0] <= userCapoNum)
+        {
+            fingerWrtCapoError.gameObject.SetActive(true);
+        }
+        else
+        {
+            fingerWrtCapoError.gameObject.SetActive(false);
+        }
     }
     public void FingerNumInputA()
     {
         userFingerNum[1] = int.Parse(userInputFingerA.text);
+        if (userFingerNum[1] <= userCapoNum)
+        {
+            fingerWrtCapoError.gameObject.SetActive(true);
+        }
+        else
+        {
+            fingerWrtCapoError.gameObject.SetActive(false);
+        }
     }
     public void FingerNumInputD()
     {
         userFingerNum[2] = int.Parse(userInputFingerD.text);
+        if (userFingerNum[2] <= userCapoNum)
+        {
+            fingerWrtCapoError.gameObject.SetActive(true);
+        }
+        else
+        {
+            fingerWrtCapoError.gameObject.SetActive(false);
+        }
     }
     public void FingerNumInputG()
     {
         userFingerNum[3] = int.Parse(userInputFingerG.text);
+        if (userFingerNum[3] <= userCapoNum)
+        {
+            fingerWrtCapoError.gameObject.SetActive(true);
+        }
+        else
+        {
+            fingerWrtCapoError.gameObject.SetActive(false);
+        }
     }
     public void FingerNumInputB()
     {
         userFingerNum[4] = int.Parse(userInputFingerB.text);
+        if (userFingerNum[4] <= userCapoNum)
+        {
+            fingerWrtCapoError.gameObject.SetActive(true);
+        }
+        else
+        {
+            fingerWrtCapoError.gameObject.SetActive(false);
+        }
     }
     public void FingerNumInputEhigh()
     {
         userFingerNum[5] = int.Parse(userInputFingerEhigh.text);
+        if (userFingerNum[5] <= userCapoNum)
+        {
+            fingerWrtCapoError.gameObject.SetActive(true);
+        }
+        else
+        {
+            fingerWrtCapoError.gameObject.SetActive(false);
+        }
     }
     public void CapoNumInput()
     {
