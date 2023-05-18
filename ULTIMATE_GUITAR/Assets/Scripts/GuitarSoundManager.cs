@@ -27,7 +27,7 @@ public class GuitarSoundManager : MonoBehaviour
     private float[] _audioData;
 
     public List<StorePlayedNote> storeData = new List<StorePlayedNote>();
-
+    public string note;
     public TextMeshProUGUI similarityOutputText;
 
     private void Start()
@@ -68,7 +68,7 @@ public class GuitarSoundManager : MonoBehaviour
                 newData[i] = _audioData[oldIndex];
             }
 
-            string note = audioAnalyzer.Interpret(newData, _sampleRate);
+            note = audioAnalyzer.Interpret(newData, _sampleRate);
 
             if (buttonScript.isRecordingPressed)
             {

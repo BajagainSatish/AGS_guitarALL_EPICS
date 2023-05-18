@@ -59,38 +59,10 @@ public static class JsonCompare
         notes2 = JsonHelper.FromJson<StorePlayedNote>(jsonStringUser);
 
         // Compare the arrays for similarity
-        bool areSimilar = CompareNotes(notes1, notes2);
-        //Debug.Log("The JSON files are " + (areSimilar ? "similar" : "different"));
-
         JsonConverterToCharacter(notes1,notes2);
     }
-    private static bool CompareNotes(StorePlayedNote[] notes1, StorePlayedNote[] notes2)
-    {
-        // If either array is null, they are not similar
-        if (notes1 == null || notes2 == null)
-        {
-            Debug.Log("Null value error!!!");
-            return false;
-        }
-        //Debug.Log("Notes length: " + notes2.Length);
-        for (int i = 0; i < notes2.Length; i++)
-        {
-            //Debug.Log("notes2[" + i + "].note: " + notes2[i].note);
-            //Debug.Log("notes2[" + i + "].mode: " + notes2[i].mode);
-        }
 
-        // Check each note in the arrays for similarity
-        for (int i = 0; i < notes1.Length; i++)
-        {
-            if (notes1[i].note != notes2[i].note)
-            {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    private static void JsonConverterToCharacter(StorePlayedNote[] jsonDataOriginal, StorePlayedNote[] jsonDataUser)
+    public static void JsonConverterToCharacter(StorePlayedNote[] jsonDataOriginal, StorePlayedNote[] jsonDataUser)
     {
         int noteMatch, modeMatch;
         string[] encodedArrayNotesOriginal = new string[jsonDataOriginal.Length];
@@ -166,7 +138,7 @@ public static class JsonCompare
 
         if (jsonDataUser.Length > lowerRange && jsonDataUser.Length < upperRange)//25% to 75%
         {
-            if (jsonDataUser.Length != jsonDataOriginal.Length)
+            if ((jsonDataUser.Length != jsonDataOriginal.Length) && similarityNote != 0)//prevent similarityNote < 0
             {
                 similarityNote -= 5.75f;//not so good logic for now, think later
             }
