@@ -20,6 +20,7 @@ public class StringClickHandler : MonoBehaviour
     public TMP_InputField userInputFingerEhigh;
     public TMP_InputField userInputCapo;
     public TextMeshProUGUI fingerWrtCapoError;
+    public TextMeshProUGUI invalidFingerError;
 
     [SerializeField] private ParticleSystem glowEffect;
     [SerializeField] private LayerMask layerMask;
@@ -46,13 +47,13 @@ public class StringClickHandler : MonoBehaviour
     private float timer; // Timer to keep track of the progress of the bend
 
     private bool audioPlayed = false;
-
     private void Start()
     {
         sphereControllerScript = GetComponent<SphereController>();
         userFingerNum = new int[]{0,0,0,0,0,0};
         userCapoNum = 0;
         fingerWrtCapoError.gameObject.SetActive(false);
+        invalidFingerError.gameObject.SetActive(false);
     }
 
     private void Update()
@@ -701,29 +702,17 @@ public class StringClickHandler : MonoBehaviour
         if (userCapoNum >=0 && userCapoNum <= 16)
         {
             capoControllerScript.MoveCapoOverFret(userCapoNum);
-            capoControllerScript.errorDisplayText.gameObject.SetActive(false);
-        }
-        else
-        {
-            capoControllerScript.errorDisplayText.gameObject.SetActive(true);
         }
 
         for (int i = 0; i < 6; i++)
         {
             if (userFingerNum[i] >= 0 && userFingerNum[i] <= 23)
             {
-                if (userCapoNum > 0 && userCapoNum <= 16)
+                if (userFingerNum[i] <= userCapoNum)
                 {
-                    if (userCapoNum > userFingerNum[i])//ensure that finger is not at capo position or behind capo
-                    {
-                        userFingerNum[i] = 0;
-                    }
+                    userFingerNum[i] = 0;
                 }
                 sphereControllerScript.MoveSphereOverString(i + 1, userFingerNum);
-            }
-            else
-            {
-                capoControllerScript.errorDisplayText.gameObject.SetActive(true);//will be active even if atleast one finger input is wrong
             }
         }
 
@@ -788,78 +777,148 @@ public class StringClickHandler : MonoBehaviour
     public void FingerNumInputElow()
     {
         userFingerNum[0] = int.Parse(userInputFingerElow.text);
-        if (userFingerNum[0] <= userCapoNum)
+        if (userFingerNum[0] < 0 || userFingerNum[0] > 23)
         {
-            fingerWrtCapoError.gameObject.SetActive(true);
+            userInputFingerElow.text = "";
+            invalidFingerError.gameObject.SetActive(true);
         }
         else
         {
+        if (userFingerNum[0] != 0 && userFingerNum[0] < userCapoNum)
+        {
+            userInputFingerElow.text = "";
+            fingerWrtCapoError.gameObject.SetActive(true);
+            userFingerNum[0] = 0;
+            }
+        else{
             fingerWrtCapoError.gameObject.SetActive(false);
+        }
+            invalidFingerError.gameObject.SetActive(false);
         }
     }
     public void FingerNumInputA()
     {
         userFingerNum[1] = int.Parse(userInputFingerA.text);
-        if (userFingerNum[1] <= userCapoNum)
+        if (userFingerNum[1] < 0 || userFingerNum[1] > 23)
         {
-            fingerWrtCapoError.gameObject.SetActive(true);
+            userInputFingerA.text = "";
+            invalidFingerError.gameObject.SetActive(true);
         }
         else
         {
+        if (userFingerNum[1] != 0 && userFingerNum[1] < userCapoNum)
+        {
+            userInputFingerA.text = "";
+            fingerWrtCapoError.gameObject.SetActive(true);
+            userFingerNum[1] = 0;
+            }
+            else
+            {
             fingerWrtCapoError.gameObject.SetActive(false);
+        }
+            invalidFingerError.gameObject.SetActive(false);
         }
     }
     public void FingerNumInputD()
     {
         userFingerNum[2] = int.Parse(userInputFingerD.text);
-        if (userFingerNum[2] <= userCapoNum)
+        if (userFingerNum[2] < 0 || userFingerNum[2] > 23)
         {
-            fingerWrtCapoError.gameObject.SetActive(true);
+            userInputFingerD.text = "";
+            invalidFingerError.gameObject.SetActive(true);
         }
         else
         {
+        if (userFingerNum[2] != 0 && userFingerNum[2] < userCapoNum)
+        {
+            userInputFingerD.text = "";
+            userFingerNum[2] = 0;
+            fingerWrtCapoError.gameObject.SetActive(true);
+            }
+        else{
             fingerWrtCapoError.gameObject.SetActive(false);
+        }
+            invalidFingerError.gameObject.SetActive(false);
         }
     }
     public void FingerNumInputG()
     {
         userFingerNum[3] = int.Parse(userInputFingerG.text);
-        if (userFingerNum[3] <= userCapoNum)
+        if (userFingerNum[3] < 0 || userFingerNum[3] > 23)
         {
-            fingerWrtCapoError.gameObject.SetActive(true);
+            userInputFingerG.text = "";
+            invalidFingerError.gameObject.SetActive(true);
         }
         else
         {
+        if (userFingerNum[3] != 0 && userFingerNum[3] < userCapoNum)
+        {
+            userInputFingerG.text = "";
+            userFingerNum[3] = 0;
+            fingerWrtCapoError.gameObject.SetActive(true);
+            }
+        else{
             fingerWrtCapoError.gameObject.SetActive(false);
+        }
+            invalidFingerError.gameObject.SetActive(false);
         }
     }
     public void FingerNumInputB()
     {
         userFingerNum[4] = int.Parse(userInputFingerB.text);
-        if (userFingerNum[4] <= userCapoNum)
+        if (userFingerNum[4] < 0 || userFingerNum[4] > 23)
         {
-            fingerWrtCapoError.gameObject.SetActive(true);
+            userInputFingerB.text = "";
+            invalidFingerError.gameObject.SetActive(true);
         }
         else
         {
+        if (userFingerNum[4] != 0 && userFingerNum[4] < userCapoNum)
+        {
+            userInputFingerB.text = "";
+            userFingerNum[4] = 0;
+            fingerWrtCapoError.gameObject.SetActive(true);
+            }
+        else{
             fingerWrtCapoError.gameObject.SetActive(false);
+        }
+            invalidFingerError.gameObject.SetActive(false);
         }
     }
     public void FingerNumInputEhigh()
     {
         userFingerNum[5] = int.Parse(userInputFingerEhigh.text);
-        if (userFingerNum[5] <= userCapoNum)
+        if (userFingerNum[5] < 0 || userFingerNum[5] > 23)
         {
-            fingerWrtCapoError.gameObject.SetActive(true);
+            userInputFingerEhigh.text = "";
+            invalidFingerError.gameObject.SetActive(true);
         }
         else
         {
+        if (userFingerNum[5] != 0 && userFingerNum[5] < userCapoNum)
+        {
+            userInputFingerEhigh.text = "";
+            userFingerNum[5] = 0;
+            fingerWrtCapoError.gameObject.SetActive(true);
+            }
+        else {
             fingerWrtCapoError.gameObject.SetActive(false);
+        }
+            invalidFingerError.gameObject.SetActive(false);
         }
     }
     public void CapoNumInput()
     {
         userCapoNum = int.Parse(userInputCapo.text);
+        if (userCapoNum < 0 || userCapoNum > 16)
+        {
+            userInputCapo.text = "";
+            capoControllerScript.errorDisplayText.gameObject.SetActive(true);
+        }
+        else
+        {
+            capoControllerScript.errorDisplayText.gameObject.SetActive(false);
+        }
     }
     public void ChordG()
     {
