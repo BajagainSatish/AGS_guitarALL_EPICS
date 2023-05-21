@@ -7,7 +7,7 @@ public class GuitarString : MonoBehaviour
     private int stringNumber;
     private string string_name;
     private Rigidbody actualString;
-    private void Awake()
+    public void Awake()
     {
         actualString = GetComponent<Rigidbody>();
         string_name = actualString.name;

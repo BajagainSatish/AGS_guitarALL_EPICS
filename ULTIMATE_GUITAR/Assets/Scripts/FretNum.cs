@@ -10,7 +10,7 @@ public class FretNum : MonoBehaviour
 
     public StringClickHandler stringClickHandlerScript;
 
-    private void Start()
+    public void Start()
     {
         actualFret = GetComponent<Rigidbody>();
         FRET_NUMBER = Convert.ToInt32(actualFret.name);
