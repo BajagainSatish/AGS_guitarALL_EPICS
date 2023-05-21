@@ -8,16 +8,16 @@ using TMPro;
 
 public class GuitarSoundManager : MonoBehaviour
 {
-    [SerializeField] private AudioSource Elow;
-    [SerializeField] private AudioSource A;
-    [SerializeField] private AudioSource D;
-    [SerializeField] private AudioSource G;
-    [SerializeField] private AudioSource B;
-    [SerializeField] private AudioSource Ehigh;
+    public AudioSource Elow;
+    public AudioSource A;
+    public AudioSource D;
+    public AudioSource G;
+    public AudioSource B;
+    public AudioSource Ehigh;
     public AudioSource stringSound;//accessed by another script
+    public bool isUnitTesting;
 
-    [SerializeField] private AudioAnalyzer audioAnalyzer;
-    [SerializeField] private ButtonScript buttonScript;
+    public ButtonScript buttonScript;
     private GuitarSoundManager guitarSoundManager;
 
     [SerializeField] private string fileName;
@@ -30,7 +30,7 @@ public class GuitarSoundManager : MonoBehaviour
     public string note;
     public TextMeshProUGUI similarityOutputText;
 
-    private void Start()
+    public void Start()
     {
         // Initialize pitch adjustments array
         pitchAdjustments = new float[24];//open string + 23 frets
@@ -47,16 +47,20 @@ public class GuitarSoundManager : MonoBehaviour
 
         //storeData = FileHandler.ReadFromJSON<StorePlayedNote>(fileName);//verify if reading works, allows to append new values to previous values
         similarityOutputText.gameObject.SetActive(false);
+        isUnitTesting = false;
     }
 
     public void PlayFretSound(int fretNum, int strNum)
     {
-        float pitchAdjustment = pitchAdjustments[fretNum];
+        float pitchAdjustment = guitarSoundManager.pitchAdjustments[fretNum];
         stringSound = guitarSoundManager.GetStringSound(strNum);
         if (stringSound != null)
         {
             stringSound.pitch = pitchAdjustment;
-            stringSound.Play();
+            if (!isUnitTesting)
+            {
+            stringSound.Play();//prevent sound play while doing Unit Tests
+            }
 
             stringSound.clip.GetData(_audioData, 0);
 
@@ -68,7 +72,7 @@ public class GuitarSoundManager : MonoBehaviour
                 newData[i] = _audioData[oldIndex];
             }
 
-            note = audioAnalyzer.Interpret(newData, _sampleRate);
+            note = AudioAnalyzer.Interpret(newData, _sampleRate);
 
             if (buttonScript.isRecordingPressed)
             {

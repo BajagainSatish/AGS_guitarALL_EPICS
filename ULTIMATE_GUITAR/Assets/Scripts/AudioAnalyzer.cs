@@ -5,11 +5,11 @@ using UnityEngine.Rendering;
 using System.Linq;
 using System.Threading;
 
-public class AudioAnalyzer : MonoBehaviour
+public static class AudioAnalyzer
 {
-    private float[] autocorrelation;
+    private static float[] autocorrelation;
 
-    Dictionary<float, string> n = new Dictionary<float, string>()
+    static Dictionary<float, string> n = new Dictionary<float, string>()
     {
     {73.42f, "D"},
     {77.78f, "D#"},
@@ -63,13 +63,11 @@ public class AudioAnalyzer : MonoBehaviour
     {1244.51f, "D#"}
     };
 
-    readonly float[] notes = new float[] { 73.42f, 77.78f, 82.41f, 87.31f, 92.50f, 98.00f, 103.83f, 110.00f, 116.54f, 123.47f, 130.81f, 138.59f, 146.83f, 155.56f, 164.81f, 174.61f, 185.00f, 196.00f, 207.65f, 220.00f, 233.08f, 246.94f, 261.63f, 277.18f, 293.66f, 311.13f, 329.63f, 349.23f, 369.99f, 392.00f, 415.30f, 440.00f, 466.16f, 493.88f, 523.25f, 554.37f, 587.33f, 622.25f, 659.25f, 698.46f, 739.99f, 783.99f, 830.61f, 880.00f, 932.33f, 987.77f, 1046.50f, 1108.73f, 1174.66f, 1244.51f};
-    void Start()
+    readonly static float[] notes = new float[] { 73.42f, 77.78f, 82.41f, 87.31f, 92.50f, 98.00f, 103.83f, 110.00f, 116.54f, 123.47f, 130.81f, 138.59f, 146.83f, 155.56f, 164.81f, 174.61f, 185.00f, 196.00f, 207.65f, 220.00f, 233.08f, 246.94f, 261.63f, 277.18f, 293.66f, 311.13f, 329.63f, 349.23f, 369.99f, 392.00f, 415.30f, 440.00f, 466.16f, 493.88f, 523.25f, 554.37f, 587.33f, 622.25f, 659.25f, 698.46f, 739.99f, 783.99f, 830.61f, 880.00f, 932.33f, 987.77f, 1046.50f, 1108.73f, 1174.66f, 1244.51f};
+
+    public static string Interpret(float[] audioData, int sampleRate)
     {
         autocorrelation = new float[4096];
-    }
-    public string Interpret(float[] audioData, int sampleRate)
-    {
         float[] ac = AutocorrelationWithShiftingLag(audioData);
         float[] normalized = MaxAbsoluteScaling(ac);
         float freq = GetFreq(normalized, sampleRate);
@@ -86,7 +84,7 @@ public class AudioAnalyzer : MonoBehaviour
     }
 
     //autocorrelation function
-    float Rxx(int l, float N, float[] x)
+    private static float Rxx(int l, float N, float[] x)
     {
         float sum = 0;
         for (var n = 0; n <= N - l - 1; n++)
@@ -96,7 +94,7 @@ public class AudioAnalyzer : MonoBehaviour
         return sum;
     }
 
-    float[] AutocorrelationWithShiftingLag(float[] samples)
+    private static float[] AutocorrelationWithShiftingLag(float[] samples)
     {
         for (int lag = 0; lag < samples.Length; lag++)
         {
@@ -105,14 +103,14 @@ public class AudioAnalyzer : MonoBehaviour
         return autocorrelation;
     }
 
-    float[] MaxAbsoluteScaling(float[] data)
+    private static float[] MaxAbsoluteScaling(float[] data)
     {
         float xMax = Mathf.Abs(data.Max());
         return data.Select(x => x / xMax).ToArray();
     }
 
     //peak detection
-    float GetFreq(float[] autocorrelation, int sampleRate)
+    private static float GetFreq(float[] autocorrelation, int sampleRate)
     {
         float sum = 0;
         int pd_state = 0;
@@ -141,7 +139,7 @@ public class AudioAnalyzer : MonoBehaviour
         return frequency;
     }
 
-    float GetFundamentalFrequency(float frequency)
+    private static float GetFundamentalFrequency(float frequency)
     {
         for (int i = 1; i <= 5; i++)
         {
@@ -154,7 +152,7 @@ public class AudioAnalyzer : MonoBehaviour
         return frequency;
     }
 
-    float GetClosestNoteFrequency(float frequency)//work on this later, maybe frequency just greater than this frequency rather than closest note
+    private static float GetClosestNoteFrequency(float frequency)//work on this later, maybe frequency just greater than this frequency rather than closest note
     {//Out of 24 * 6 notes, these 3 notes at extremely high frequency are exception as per our work logic of finding closest note. Here, for fret 21 and 22, unlike 19 here we chopped off all values after decimal to compare
         if (frequency == 958.6957f)
         {
@@ -184,7 +182,7 @@ public class AudioAnalyzer : MonoBehaviour
             return closestNote;
         }
     }
-    string GetNoteLetter(float frequency)
+    private static string GetNoteLetter(float frequency)
     {
         if (n.ContainsKey(frequency))
         {
