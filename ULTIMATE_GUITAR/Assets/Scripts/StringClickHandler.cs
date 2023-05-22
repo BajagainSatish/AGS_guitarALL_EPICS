@@ -38,7 +38,7 @@ public class StringClickHandler : MonoBehaviour
     private int strNum;
 
     private int userCapoNum;
-    private int[] userFingerNum;//finger press purpose
+    private int[] userFingerNum;//finger press purpose, public for unit testing
 
     readonly private float duration = 1f; // Duration of the bend in seconds, arbitrary value
     private float startPitch;
@@ -955,6 +955,16 @@ public class StringClickHandler : MonoBehaviour
         userFingerNum[3] = 2 + userCapoNum;
         userFingerNum[4] = 3 + userCapoNum;
         userFingerNum[5] = 2 + userCapoNum;
+    }
+
+    //for Unit Test Purposes
+    public void InputUserFingerNumArray(int[] array)
+    {
+        userFingerNum = array;
+    }
+    public void InputUserCapoNum(int num)
+    {
+        userCapoNum = num;
     }
 }
 

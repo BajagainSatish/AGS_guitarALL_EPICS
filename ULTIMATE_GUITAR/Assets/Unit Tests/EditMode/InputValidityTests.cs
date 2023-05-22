@@ -43,4 +43,102 @@ public class InputValidityTests
         testScript.MoveCapoOverFret(validNum);
         Assert.IsFalse(errorDisplayText.IsActive());//error display text is inactive if no error
     }
+    [Test]
+    public void FingerNumInputElow_m66FingerNum_NoneDisplay()
+    {
+        int[] defaultArray = { 0, 0, 0, 0, 0, 0 };
+        GameObject testObject = new GameObject();
+        testObject.AddComponent<TextMeshProUGUI>();
+        testObject.AddComponent<TMP_InputField>();
+        testObject.GetComponent<TMP_InputField>().text = "-66";
+
+        StringClickHandler testScript = testObject.AddComponent<StringClickHandler>();
+        testScript.userInputFingerElow = testObject.GetComponent<TMP_InputField>();
+        testScript.invalidFingerError = testObject.GetComponent<TextMeshProUGUI>();
+
+        testScript.InputUserFingerNumArray(defaultArray);
+        testScript.FingerNumInputElow();
+        Assert.AreEqual("",testScript.userInputFingerElow.text);
+    }
+    [Test]
+    public void FingerNumInputElow_66FingerNum_ErrorTextActive()
+    {
+        int[] defaultArray = { 0, 0, 0, 0, 0, 0 };
+        GameObject testObject = new GameObject();
+        testObject.AddComponent<TextMeshProUGUI>();
+        testObject.AddComponent<TMP_InputField>();
+        testObject.GetComponent<TMP_InputField>().text = "66";
+
+        StringClickHandler testScript = testObject.AddComponent<StringClickHandler>();
+        testScript.userInputFingerElow = testObject.GetComponent<TMP_InputField>();
+        testScript.invalidFingerError = testObject.GetComponent<TextMeshProUGUI>();
+
+        testScript.InputUserFingerNumArray(defaultArray);
+        testScript.FingerNumInputElow();
+        Assert.IsTrue(testScript.invalidFingerError.IsActive());
+    }
+    [Test]
+    public void FingerNumInputElow_6FinNumCapoValid_ErrorTextInactive()
+    {
+        int[] defaultArray = { 0, 0, 0, 0, 0, 0 };
+        GameObject testObject = new GameObject();
+        GameObject capoObject = new GameObject();
+
+        testObject.AddComponent<TextMeshProUGUI>();
+        testObject.AddComponent<TMP_InputField>();
+        testObject.GetComponent<TMP_InputField>().text = "6";
+
+        StringClickHandler testScript = testObject.AddComponent<StringClickHandler>();
+        testScript.userInputFingerElow = testObject.GetComponent<TMP_InputField>();
+        testScript.invalidFingerError = testObject.GetComponent<TextMeshProUGUI>();
+        testScript.fingerWrtCapoError = testObject.GetComponent<TextMeshProUGUI>();
+
+        testScript.InputUserFingerNumArray(defaultArray);
+        testScript.InputUserCapoNum(0);
+        testScript.FingerNumInputElow();
+        Assert.IsFalse(testScript.fingerWrtCapoError.IsActive());
+    }
+    [Test]
+    public void FingerNumInputElow_6FinNumCapoValid_0()
+    {
+        int[] defaultArray = { 6, 0, 0, 0, 0, 0 };
+        GameObject testObject = new GameObject();
+        GameObject capoObject = new GameObject();
+
+        testObject.AddComponent<TextMeshProUGUI>();
+        testObject.AddComponent<TMP_InputField>();
+        testObject.GetComponent<TMP_InputField>().text = "6";
+
+        StringClickHandler testScript = testObject.AddComponent<StringClickHandler>();
+        testScript.userInputFingerElow = testObject.GetComponent<TMP_InputField>();
+        testScript.invalidFingerError = testObject.GetComponent<TextMeshProUGUI>();
+        testScript.fingerWrtCapoError = testObject.GetComponent<TextMeshProUGUI>();
+
+        testScript.InputUserFingerNumArray(defaultArray);
+        testScript.InputUserCapoNum(9);
+        testScript.FingerNumInputElow();
+        Assert.AreEqual("",testScript.userInputFingerElow.text);
+    }
+    [Test]
+    public void FingerNumInputElow_6FinNumCapoInValid_0()
+    {
+        int[] defaultArray = { 0, 0, 0, 0, 0, 0 };
+        GameObject testObject = new GameObject();
+        GameObject capoObject = new GameObject();
+
+        testObject.AddComponent<TextMeshProUGUI>();
+        testObject.AddComponent<TMP_InputField>();
+        testObject.GetComponent<TMP_InputField>().text = "6";
+
+        StringClickHandler testScript = testObject.AddComponent<StringClickHandler>();
+        testScript.userInputFingerElow = testObject.GetComponent<TMP_InputField>();
+        testScript.invalidFingerError = testObject.GetComponent<TextMeshProUGUI>();
+        testScript.fingerWrtCapoError = testObject.GetComponent<TextMeshProUGUI>();
+
+        testScript.InputUserFingerNumArray(defaultArray);
+        testScript.InputUserCapoNum(9);
+        testScript.FingerNumInputElow();
+        Assert.AreEqual("", testScript.userInputFingerElow.text);
+    }
+    //Imp note: userFingerNum[0] = 0 inside the loop, incase you are debugging later trying to add more Unit Tests.
 }
