@@ -1,3 +1,4 @@
+/*
 using UnityEngine;
 using System.Collections.Generic;
 using System.IO;
@@ -180,3 +181,4 @@ public class FundamentalFrequencyDetector : MonoBehaviour
     }
 }
 //This is a test script and not used in actual Guitar Scene
+*/
