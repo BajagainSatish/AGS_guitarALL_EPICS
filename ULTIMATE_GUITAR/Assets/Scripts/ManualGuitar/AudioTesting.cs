@@ -1,3 +1,4 @@
+/*
 using System.IO;
 using UnityEngine;
 
@@ -59,3 +60,4 @@ public class AudioTesting : MonoBehaviour
     }
 }
 //This code is practice code before developing guitar and was used in another scene, not used by other gameobjects
+*/

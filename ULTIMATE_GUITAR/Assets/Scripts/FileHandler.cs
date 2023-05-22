@@ -13,7 +13,7 @@ public static class FileHandler
         Debug.Log("Content: " + content);
         WriteFile(GetPath(fileName), content);
     }
-
+    /*
     public static List<T> ReadFromJSON<T>(string fileName)
     {
         string content = ReadFile(GetPath(fileName));
@@ -26,7 +26,7 @@ public static class FileHandler
         List<T> res = JsonHelper.FromJson<T>(content).ToList();
         return res;
     }
-
+    */
     public static string GetPath(string fileName)
     {
         return Application.persistentDataPath + "/" + fileName;
@@ -41,7 +41,7 @@ public static class FileHandler
             writer.Write(content);
         }
     }
-
+    /*
     public static string ReadFile(string path)
     {
         if (File.Exists(path))
@@ -54,6 +54,7 @@ public static class FileHandler
         }
         return "";
     }
+    */
 }
 public static class JsonHelper
 {

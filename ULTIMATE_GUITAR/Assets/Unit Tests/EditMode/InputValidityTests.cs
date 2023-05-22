@@ -1,4 +1,3 @@
-/*
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -143,4 +142,3 @@ public class InputValidityTests
     }
     //Imp note: userFingerNum[0] = 0 inside the loop, incase you are debugging later trying to add more Unit Tests.
 }
-*/

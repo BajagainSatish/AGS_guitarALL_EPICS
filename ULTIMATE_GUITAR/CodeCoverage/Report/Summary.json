@@ -1,0 +1,42 @@
+{
+  "summary": {
+    "generatedon": "2023-05-22T13:35:36Z",
+    "parser": "MultiReportParser (6x OpenCoverParser)",
+    "assemblies": 3,
+    "classes": 17,
+    "files": 16,
+    "coveredlines": 1359,
+    "uncoveredlines": 321,
+    "coverablelines": 1680,
+    "totallines": 2803,
+    "linecoverage": 80.8,
+    "coveredbranches": 0,
+    "totalbranches": 0,
+    "coveredmethods": 86,
+    "totalmethods": 102,
+    "methodcoverage": 84.3
+ },
+  "coverage": {
+    "assemblies": [
+      { "name": "EditMode", "classes": 2, "coverage": 48.3, "coveredlines": 88, "coverablelines": 182, "totallines": 274, "branchcoverage": null, "coveredbranches": 0, "totalbranches": 0, "methodcoverage": 50, "coveredmethods": 7, "totalmethods": 14, "classesinassembly": [
+        { "name": "AudioSimilarityTest", "coverage": 100, "coveredlines": 88, "coverablelines": 88, "totallines": 130, "branchcoverage": null, "coveredbranches": 0, "totalbranches": 0, "methodcoverage": 100, "coveredmethods": 7, "totalmethods": 7 },
+        { "name": "InputValidityTests", "coverage": 0, "coveredlines": 0, "coverablelines": 94, "totallines": 144, "branchcoverage": null, "coveredbranches": 0, "totalbranches": 0, "methodcoverage": 0, "coveredmethods": 0, "totalmethods": 7 } ] },
+      { "name": "PlayMode", "classes": 2, "coverage": 100, "coveredlines": 157, "coverablelines": 157, "totallines": 260, "branchcoverage": null, "coveredbranches": 0, "totalbranches": 0, "methodcoverage": 100, "coveredmethods": 20, "totalmethods": 20, "classesinassembly": [
+        { "name": "AutoCorrelation", "coverage": 100, "coveredlines": 103, "coverablelines": 103, "totallines": 177, "branchcoverage": null, "coveredbranches": 0, "totalbranches": 0, "methodcoverage": 100, "coveredmethods": 14, "totalmethods": 14 },
+        { "name": "FretNum_StringNum_Validation", "coverage": 100, "coveredlines": 54, "coverablelines": 54, "totallines": 83, "branchcoverage": null, "coveredbranches": 0, "totalbranches": 0, "methodcoverage": 100, "coveredmethods": 6, "totalmethods": 6 } ] },
+      { "name": "Scripts", "classes": 13, "coverage": 83, "coveredlines": 1114, "coverablelines": 1341, "totallines": 2348, "branchcoverage": null, "coveredbranches": 0, "totalbranches": 0, "methodcoverage": 86.7, "coveredmethods": 59, "totalmethods": 68, "classesinassembly": [
+        { "name": "AudioAnalyzer", "coverage": 96.9, "coveredlines": 95, "coverablelines": 98, "totallines": 196, "branchcoverage": null, "coveredbranches": 0, "totalbranches": 0, "methodcoverage": 100, "coveredmethods": 9, "totalmethods": 9 },
+        { "name": "AudioTesting", "coverage": 0, "coveredlines": 0, "coverablelines": 36, "totallines": 63, "branchcoverage": null, "coveredbranches": 0, "totalbranches": 0, "methodcoverage": 0, "coveredmethods": 0, "totalmethods": 2 },
+        { "name": "ButtonScript", "coverage": 100, "coveredlines": 89, "coverablelines": 89, "totallines": 124, "branchcoverage": null, "coveredbranches": 0, "totalbranches": 0, "methodcoverage": 100, "coveredmethods": 10, "totalmethods": 10 },
+        { "name": "CapoController", "coverage": 74, "coveredlines": 20, "coverablelines": 27, "totallines": 101, "branchcoverage": null, "coveredbranches": 0, "totalbranches": 0, "methodcoverage": 66.6, "coveredmethods": 2, "totalmethods": 3 },
+        { "name": "FileHandler", "coverage": 48.4, "coveredlines": 16, "coverablelines": 33, "totallines": 79, "branchcoverage": null, "coveredbranches": 0, "totalbranches": 0, "methodcoverage": 60, "coveredmethods": 3, "totalmethods": 5 },
+        { "name": "FretNum", "coverage": 100, "coveredlines": 7, "coverablelines": 7, "totallines": 22, "branchcoverage": null, "coveredbranches": 0, "totalbranches": 0, "methodcoverage": 100, "coveredmethods": 2, "totalmethods": 2 },
+        { "name": "GuitarSoundManager", "coverage": 98.3, "coveredlines": 58, "coverablelines": 59, "totallines": 109, "branchcoverage": null, "coveredbranches": 0, "totalbranches": 0, "methodcoverage": 100, "coveredmethods": 5, "totalmethods": 5 },
+        { "name": "GuitarString", "coverage": 70.9, "coveredlines": 22, "coverablelines": 31, "totallines": 43, "branchcoverage": null, "coveredbranches": 0, "totalbranches": 0, "methodcoverage": 100, "coveredmethods": 2, "totalmethods": 2 },
+        { "name": "JsonCompare", "coverage": 99.2, "coveredlines": 127, "coverablelines": 128, "totallines": 210, "branchcoverage": null, "coveredbranches": 0, "totalbranches": 0, "methodcoverage": 100, "coveredmethods": 4, "totalmethods": 4 },
+        { "name": "JsonHelper", "coverage": 81.8, "coveredlines": 9, "coverablelines": 11, "totallines": 79, "branchcoverage": null, "coveredbranches": 0, "totalbranches": 0, "methodcoverage": 100, "coveredmethods": 4, "totalmethods": 4 },
+        { "name": "SphereController", "coverage": 84.9, "coveredlines": 45, "coverablelines": 53, "totallines": 254, "branchcoverage": null, "coveredbranches": 0, "totalbranches": 0, "methodcoverage": 66.6, "coveredmethods": 2, "totalmethods": 3 },
+        { "name": "StorePlayedNote", "coverage": 100, "coveredlines": 5, "coverablelines": 5, "totallines": 15, "branchcoverage": null, "coveredbranches": 0, "totalbranches": 0, "methodcoverage": 100, "coveredmethods": 1, "totalmethods": 1 },
+        { "name": "StringClickHandler", "coverage": 81.2, "coveredlines": 621, "coverablelines": 764, "totallines": 1053, "branchcoverage": null, "coveredbranches": 0, "totalbranches": 0, "methodcoverage": 83.3, "coveredmethods": 15, "totalmethods": 18 } ] } ]
+  }
+}
